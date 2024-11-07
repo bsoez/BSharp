@@ -1,13 +1,7 @@
-using Microsoft.VisualBasic.ApplicationServices;
-using Microsoft.VisualBasic.Logging;
-using System.Data;
+Ôªøusing System.Data;
 using System.Data.OleDb;
-using System.Drawing.Drawing2D;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
-
 
 namespace BSharp
 {
@@ -45,7 +39,7 @@ namespace BSharp
                 filePath = Path.GetDirectoryName(filePath);
                 if (filePath is null)
                 {
-                    MessageBox.Show("Error: No se puede subir m·s niveles en la jerarquÌa de directorios.");
+                    MessageBox.Show("Error: No se puede subir m√°s niveles en la jerarqu√≠a de directorios.");
                     return;
                 }
                 string candidatePath = Path.Combine(filePath, "matrizBuena.xlsx");
@@ -58,11 +52,11 @@ namespace BSharp
 
             if (!File.Exists(filePath))
             {
-                MessageBox.Show("Error: El archivo no se encontrÛ en los directorios especificados.");
+                MessageBox.Show("Error: El archivo no se encontr√≥ en los directorios especificados.");
                 return;
             }
 
-            // Cambiamos HDR a 'YES' para que el primer renglÛn sea interpretado como encabezado de columna
+            // Cambiamos HDR a 'YES' para que el primer rengl√≥n sea interpretado como encabezado de columna
             string cnn = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties='Excel 8.0;HDR={1};IMEX={2}'";
             cnn = string.Format(cnn, filePath, "YES", "1");
 
@@ -82,18 +76,18 @@ namespace BSharp
                 dt.Columns.RemoveAt(dt.Columns.Count - 1);
                 dt.Columns.RemoveAt(0);
 
-                dt.Columns["#"].ColumnName = ".";
+                dt.Columns["#"]!.ColumnName = ".";
 
-                dt.Columns["("].ColumnName = "[";
-                dt.Columns[")"].ColumnName = "]";
-                dt.Columns["_"].ColumnName = "!";
+                dt.Columns["("]!.ColumnName = "[";
+                dt.Columns[")"]!.ColumnName = "]";
+                dt.Columns["_"]!.ColumnName = "!";
 
-                dt.Columns["(1"].ColumnName = "(";
-                dt.Columns[")1"].ColumnName = ")";
-                dt.Columns["_1"].ColumnName = "_";
-                dt.Columns["#1"].ColumnName = "#";
+                dt.Columns["(1"]!.ColumnName = "(";
+                dt.Columns[")1"]!.ColumnName = ")";
+                dt.Columns["_1"]!.ColumnName = "_";
+                dt.Columns["#1"]!.ColumnName = "#";
 
-                dt.Columns["f11"].ColumnName = "f1";
+                dt.Columns["f11"]!.ColumnName = "f1";
 
                 dtMatriz = dt;
                 excelConnection.Close();
@@ -110,7 +104,7 @@ namespace BSharp
                 filePath = Path.GetDirectoryName(filePath);
                 if (filePath is null)
                 {
-                    MessageBox.Show("Error: No se puede subir m·s niveles en la jerarquÌa de directorios.");
+                    MessageBox.Show("Error: No se puede subir m√°s niveles en la jerarqu√≠a de directorios.");
                     return;
                 }
                 string candidatePath = Path.Combine(filePath, "matrizBuena.xlsx");
@@ -122,7 +116,7 @@ namespace BSharp
             }
             if (!File.Exists(filePath))
             {
-                MessageBox.Show("Error: El archivo no se encontrÛ en los directorios especificados.");
+                MessageBox.Show("Error: El archivo no se encontr√≥ en los directorios especificados.");
                 return;
             }
 
@@ -139,7 +133,7 @@ namespace BSharp
                 DataTable dt = new();
                 adapter.Fill(dt);               
                 dt.Columns.RemoveAt(dt.Columns.Count-1);
-               dt.Columns.RemoveAt(0);
+                dt.Columns.RemoveAt(0);
                 dtMatriz = dt;
                 excelConnection.Close();
                 dgvMatriz.DataSource = dt;
@@ -151,34 +145,34 @@ namespace BSharp
         {
             // Crear el DataTable con columnas adecuadas
             DataTable dtLexemas = new();
-            dtLexemas.Columns.Add("Renglon", typeof(int));  // N˙mero de renglÛn
-            dtLexemas.Columns.Add("Columna", typeof(int));  // PosiciÛn dentro del renglÛn
+            dtLexemas.Columns.Add("Renglon", typeof(int));  // N√∫mero de rengl√≥n
+            dtLexemas.Columns.Add("Columna", typeof(int));  // Posici√≥n dentro del rengl√≥n
             dtLexemas.Columns.Add("InputToken", typeof(string));  // Token del Input
             dtLexemas.Columns.Add("OutputToken", typeof(string)); // Token del Output
 
-            // Separar las lÌneas de los textos de entrada
+            // Separar las l√≠neas de los textos de entrada
             string[] inputLines = InputTokens.Split(["\r\n", "\n"], StringSplitOptions.None);
             string[] outputLines = OutputTokens.Split(["\r\n", "\n"], StringSplitOptions.None);
 
-            // Procesar cada renglÛn
+            // Procesar cada rengl√≥n
             for (int i = 0; i < inputLines.Length; i++)
             {
-                // Separar los tokens en cada renglÛn utilizando un car·cter como delimitador
-                string[] inputTokens = inputLines[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                string[] outputTokens = outputLines[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                // Separar los tokens en cada rengl√≥n utilizando un car√°cter como delimitador
+                string[] inputTokens = inputLines[i].Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
+                string[] outputTokens = outputLines[i].Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
 
                 // Asegurar que ambos renglones tengan la misma cantidad de tokens
                 if (inputTokens.Length != outputTokens.Length)
                 {
-                    throw new Exception("Error: Los tokens de entrada y salida no coinciden en el renglÛn " + (i + 1));
+                    throw new Exception("Error: Los tokens de entrada y salida no coinciden en el rengl√≥n " + (i + 1));
                 }
 
-                // Procesar cada token en el renglÛn
+                // Procesar cada token en el rengl√≥n
                 for (int j = 0; j < inputTokens.Length; j++)
                 {
                     DataRow row = dtLexemas.NewRow();
-                    row["Renglon"] = i + 1;  // N˙mero de renglÛn
-                    row["Columna"] = j + 1;  // PosiciÛn en la columna
+                    row["Renglon"] = i + 1;  // N√∫mero de rengl√≥n
+                    row["Columna"] = j + 1;  // Posici√≥n en la columna
                     row["InputToken"] = inputTokens[j];  // Token en Input
                     row["OutputToken"] = outputTokens[j]; // Token en Output
                     dtLexemas.Rows.Add(row);
@@ -195,14 +189,14 @@ namespace BSharp
                 // Caso 1: Si el OutputToken es 'IDEN'
                 if (outputToken == "IDEN" && columnaActual > 1)
                 {
-                    // Revisamos la columna anterior dentro del mismo renglÛn
+                    // Revisamos la columna anterior dentro del mismo rengl√≥n
                     DataRow? columnaAnterior = dtLexemas.AsEnumerable().FirstOrDefault(r => (int)r["Renglon"] == renglonActual && (int)r["Columna"] == columnaActual - 1);
 
                     if (columnaAnterior != null)
                     {
                         string? inputTokenAnterior = columnaAnterior["InputToken"].ToString();
 
-                        // Verificamos si el token anterior es un tipo de dato v·lido
+                        // Verificamos si el token anterior es un tipo de dato v√°lido
                         if (TiposDeDatos.Contains(inputTokenAnterior))
                         {
                             dgvTablaSimbolos.Rows.Add(inputToken, outputToken, inputTokenAnterior);
@@ -231,19 +225,38 @@ namespace BSharp
         }
         private void btnCompilar_Click(object sender, EventArgs e) 
         {
-            dgvTablaSimbolos.Rows.Clear();
+            //List<string> tokens = ["PR01", "IDEN", " "];
+            //List<string> tokens = ["PR01", "IDEN", "ASIG", "CADE", " "];
+            //List<string> tokens = ["PR02", "NUEN", " "];
+            //List<string> tokens = ["PR03", "IDEN", "ASIG", "CADE", " "];
+            //List<string> tokens = ["PR04", "IDEN", "ASIG", "NUDE", " "];
+            
 
+            //List<string> tokens = ["PR11", "IDEN", "ASIG", "NUDE", " "];
+            //string reduction = AnalyzeBottomUp(tokens);
+            //return;
+
+            dgvTablaSimbolos.Rows.Clear();
             txtOutput.Clear();
 
-            bool success = AnalizadorLexico();
-            if (success)
+            bool successLexico = AnalizadorLexico();
+            if (successLexico)
             {
                 Lexema(txtInput.Text, txtOutput.Text);
             }
+
+            bool successSintactico = AnalizadorSintactico();
+            if (successSintactico)
+            {
+
+            }
         }
+
+        private static readonly char[] separatorArray = [' '];
+
         private void txtInput_TextChanged(object sender, EventArgs e) { ChangeColorWord(); }
 
-        public static DataTable dtMatriz = new();
+        private static DataTable dtMatriz = new();
 
         public bool AnalizadorLexico()
         {
@@ -286,75 +299,6 @@ namespace BSharp
             return false;
         }
 
-        private void Compile()
-        {
-            dgvTablaSimbolos.Rows.Clear();
-            txtOutput.Clear();
-            for (int i = 0; i < txtInput.Lines.Length; i++)
-            {
-                string[] code = txtInput.Lines[i].Split(" ");
-                string line = txtInput.Lines[i] + " " + "∞";
-                char[] characters = line.ToCharArray();
-                int state = 1;
-                int characterIndex = -1;
-                foreach (char character in characters)
-                {
-                    characterIndex++;
-                    for (int j = 0; j < dgvMatriz.ColumnCount - 2; j++)
-                    {
-                        if (character.ToString().Equals(dgvMatriz.Rows[0].Cells[j].Value?.ToString(), StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            state = int.Parse(dgvMatriz.Rows[state].Cells[j].Value.ToString() ?? "0") + 1;
-                            break;
-                        }
-                        else if (character is ' ')
-                        {
-                            string? token = dgvMatriz.Rows[state].Cells[dgvMatriz.ColumnCount - 1].Value.ToString();
-                            txtOutput.AppendText(token + " ");
-                            string? type = token switch
-                            {
-                                "PR04" => "ENTERO",
-                                "PR06" => "CADENA",
-                                "PR14" => "REAL",
-                                _ => "N/A",
-                            };
-                            if (type is "ENTERO" || type is "REAL" || type is "CADENA")
-                            {
-                                for (int k = 0; k < code.Length; k++)
-                                {
-                                    if (code[k] is "=")
-                                    {
-                                        //AddSymbol(code[k - 1], code[k + 1], type);
-                                        //AddSymbol(type, code[k - 1], code[k + 1]);
-                                    }
-                                }
-                            }
-                            state = 1; // Reinicia el estado para el prÛximo token
-                            break;
-                        }
-                        else if (character is '∞')
-                        {
-                            // Agrega una nueva lÌnea en la salida al encontrar el caracter especial
-                            txtOutput.AppendText(Environment.NewLine);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Verifica la salida en busca de errores lÈxicos y los agrega al informe de errores
-            for (int i = 0; i < txtOutput.Lines.Length - 1; i++)
-            {
-                if (txtOutput.Lines[i].Contains("ERLEX"))
-                {
-                    int line = i + 1;
-                    AddError(line.ToString(), "ERLEX", "ERROR L…XICO");
-                }
-            }
-
-            sec();
-        }
-
         public void AddSymbol(string name, string value, string type)
         {
             dgvTablaSimbolos.Rows.Add(name, value, type);
@@ -389,25 +333,127 @@ namespace BSharp
             string miString = txtOutput.Text;
 
 
-            // Resto del cÛdigo para generar el archivo de texto
+            // Resto del c√≥digo para generar el archivo de texto
             string rutaArchivo = "C:\\Users\\belen\\Desktop\\miArchivo.txt";
         
 
             try
             {
-                using (StreamWriter sw = new StreamWriter(rutaArchivo))
+                using (StreamWriter sw = new(rutaArchivo))
                 {
                     sw.Write(miString);
                 }
 
                 MessageBox.Show("Se ha generado correctamente el archivo .txt");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show("Error en el archivo .txt");
             }
 
         }
+
+        #region An√°lisis Sint√°ctico
+        ///Bottom-up
+
+        public bool AnalizadorSintactico()
+        {
+            string[] sintaxisLines = txtOutput.Text.Split('\n');
+            int numLinea = 1;
+            foreach (string line in sintaxisLines)
+            {
+                List<string> lines = [.. line.Split(' ')];
+                lines.Add(" ");
+                string x = AnalyzeBottomUp(lines, numLinea);
+                txtSintaxis.Text += x + "\n";
+                numLinea++;
+            }
+            _ = txtSintaxis.Text.TrimEnd('\n');
+            return true;
+        }
+
+        public static string AnalyzeBottomUp(List<string> tokens, int numLinea)
+        {
+            StringBuilder sb = new($"[{numLinea}] " + string.Join(" ", tokens) + "\n");
+            Stack<string> stack = new();
+            string text;
+            while (tokens.Count > 0)
+            {
+                string token = tokens[0];
+                tokens.RemoveAt(0);
+                stack.Push(token);
+
+                while (CanReduce(stack))
+                {
+                    string stackBeforeReduce = string.Join(" ", stack.Reverse());
+                    string? reducedSymbol = Reduce(stack);
+                    if(reducedSymbol is not null)
+                    {
+                        stack.Push(reducedSymbol);
+                        string stackWaiting = (stackBeforeReduce + " " + string.Join(" ", tokens)).Trim();
+                        text = stackWaiting.Replace(stackBeforeReduce, string.Join(" ", stack.Reverse()));
+                        if(stack.Count == 1 && stack.Peek() == "S")
+                            sb.AppendLine($"[{numLinea}] S");
+                        else
+                            sb.AppendLine($"[{numLinea}] {text}");
+                    }
+                }
+            }
+            if(stack.Count is 1 && stack.Peek() is "S")
+                return sb.ToString();
+            else
+                sb.AppendLine($"[{numLinea}] ERROR");
+            return sb.ToString();
+        }
+
+        private static bool CanReduce(Stack<string> stack)
+        {
+            // Convertimos la pila en un array para acceder a los elementos por √≠ndice
+            string[] stackArray = [.. stack];
+
+            // Recorremos las reglas de la gram√°tica
+            foreach (GrammarRule rule in GrammarAnalyzer.grammarRules)
+            {
+                // Verificamos si la pila contiene suficientes elementos para comparar con la regla
+                if (stackArray.Length >= rule.RightSide.Length)
+                {
+                    // Extraemos los elementos relevantes de la pila
+                    string[] subArray = stackArray[..rule.RightSide.Length];
+
+                    // Verificamos si coinciden con el lado derecho de la regla (de atr√°s hacia adelante)
+                    if (subArray.SequenceEqual(rule.RightSide.Reverse()))
+                    {
+                        return true; // Se puede reducir
+                    }
+                }
+            }
+            return false; // No hay reducci√≥n posible
+        }
+
+        private static string? Reduce(Stack<string> stack)
+        {
+            string[] stackArray = [.. stack];
+
+            foreach (GrammarRule rule in GrammarAnalyzer.grammarRules)
+            {
+                if (stackArray.Length >= rule.RightSide.Length)
+                {
+                    string[] subArray = stackArray[..rule.RightSide.Length];
+                    if (subArray.SequenceEqual(rule.RightSide.Reverse()))
+                    {
+                        // Realizamos el pop de los elementos que coinciden con el lado derecho de la regla
+                        for (int i = 0; i < rule.RightSide.Length; i++)
+                        {
+                            stack.Pop();
+                        }
+                        return rule.LeftSide; // Retornamos el s√≠mbolo no terminal correspondiente
+                    }
+                }
+            }
+            return null; // No se pudo reducir
+        }
+
+        #endregion
 
         private void sec()
         {
@@ -463,16 +509,16 @@ namespace BSharp
             try
             {
                 // Crear un objeto StreamWriter para escribir en un archivo de texto
-                using (StreamWriter sw = new StreamWriter("C:\\Users\\belen\\Desktop\\DATOS.txt"))
+                using (StreamWriter sw = new("C:\\Users\\belen\\Desktop\\DATOS.txt"))
                 {
                     // Escribir encabezados de columnas
                     for (int i = 0; i < dgvTablaSimbolos.Columns.Count; i++)
                     {
                         sw.Write(dgvTablaSimbolos.Columns[i].HeaderText);
                         if (i < dgvTablaSimbolos.Columns.Count - 1)
-                            sw.Write("\t"); // Separador de tabulaciÛn
+                            sw.Write("\t"); // Separador de tabulaci√≥n
                     }
-                    sw.WriteLine(); // Nueva lÌnea despuÈs de los encabezados
+                    sw.WriteLine(); // Nueva l√≠nea despu√©s de los encabezados
 
                     // Escribir datos de las filas
                     foreach (DataGridViewRow row in dgvTablaSimbolos.Rows)
@@ -481,13 +527,13 @@ namespace BSharp
                         {
                             sw.Write(row.Cells[i].Value);
                             if (i < dgvTablaSimbolos.Columns.Count - 1)
-                                sw.Write("\t"); // Separador de tabulaciÛn
+                                sw.Write("\t"); // Separador de tabulaci√≥n
                         }
-                        sw.WriteLine(); // Nueva lÌnea despuÈs de cada fila
+                        sw.WriteLine(); // Nueva l√≠nea despu√©s de cada fila
                     }
                 }
 
-                MessageBox.Show("Archivo de texto generado con Èxito.", "…xito");
+                MessageBox.Show("Archivo de texto generado con √©xito.", "√âxito");
             }
             catch (Exception ex)
             {
