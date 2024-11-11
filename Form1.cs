@@ -225,17 +225,6 @@ namespace BSharp
         }
         private void btnCompilar_Click(object sender, EventArgs e) 
         {
-            //List<string> tokens = ["PR01", "IDEN", " "];
-            //List<string> tokens = ["PR01", "IDEN", "ASIG", "CADE", " "];
-            //List<string> tokens = ["PR02", "NUEN", " "];
-            //List<string> tokens = ["PR03", "IDEN", "ASIG", "CADE", " "];
-            //List<string> tokens = ["PR04", "IDEN", "ASIG", "NUDE", " "];
-            
-
-            //List<string> tokens = ["PR11", "IDEN", "ASIG", "NUDE", " "];
-            //string reduction = AnalyzeBottomUp(tokens);
-            //return;
-
             dgvTablaSimbolos.Rows.Clear();
             txtOutput.Clear();
 
@@ -358,6 +347,7 @@ namespace BSharp
 
         public bool AnalizadorSintactico()
         {
+            txtSintaxis.Clear();
             string[] sintaxisLines = txtOutput.Text.Split('\n');
             int numLinea = 1;
             foreach (string line in sintaxisLines)
@@ -417,7 +407,7 @@ namespace BSharp
                 // Verificamos si la pila contiene suficientes elementos para comparar con la regla
                 if (stackArray.Length >= rule.RightSide.Length)
                 {
-                    // Extraemos los elementos relevantes de la pila
+                    // Extraemos los elementos relevantes de la pila        .
                     string[] subArray = stackArray[..rule.RightSide.Length];
 
                     // Verificamos si coinciden con el lado derecho de la regla (de atrás hacia adelante)
