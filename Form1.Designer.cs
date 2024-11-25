@@ -45,6 +45,8 @@
             btnCompilar = new Button();
             tbpMatriz = new TabPage();
             dgvMatriz = new DataGridView();
+            lblErrores = new Label();
+            txtErrors = new RichTextBox();
             tbcTabs.SuspendLayout();
             tbpCompilador.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvTablaSimbolos).BeginInit();
@@ -59,11 +61,13 @@
             tbcTabs.Location = new Point(12, 12);
             tbcTabs.Name = "tbcTabs";
             tbcTabs.SelectedIndex = 0;
-            tbcTabs.Size = new Size(1623, 794);
+            tbcTabs.Size = new Size(1623, 952);
             tbcTabs.TabIndex = 0;
             // 
             // tbpCompilador
             // 
+            tbpCompilador.Controls.Add(txtErrors);
+            tbpCompilador.Controls.Add(lblErrores);
             tbpCompilador.Controls.Add(lblEntrada);
             tbpCompilador.Controls.Add(lblSintaxis);
             tbpCompilador.Controls.Add(lblLexico);
@@ -77,7 +81,7 @@
             tbpCompilador.Location = new Point(4, 24);
             tbpCompilador.Name = "tbpCompilador";
             tbpCompilador.Padding = new Padding(3);
-            tbpCompilador.Size = new Size(1615, 766);
+            tbpCompilador.Size = new Size(1615, 924);
             tbpCompilador.TabIndex = 0;
             tbpCompilador.Text = "Compilador";
             tbpCompilador.UseVisualStyleBackColor = true;
@@ -124,9 +128,9 @@
             // 
             // button2
             // 
-            button2.Location = new Point(755, 457);
+            button2.Location = new Point(754, 431);
             button2.Name = "button2";
-            button2.Size = new Size(633, 33);
+            button2.Size = new Size(633, 31);
             button2.TabIndex = 5;
             button2.Text = "Generar archivo de texto Tabla de simbolos";
             button2.UseVisualStyleBackColor = true;
@@ -134,9 +138,9 @@
             // 
             // button1
             // 
-            button1.Location = new Point(754, 407);
+            button1.Location = new Point(754, 398);
             button1.Name = "button1";
-            button1.Size = new Size(633, 33);
+            button1.Size = new Size(633, 31);
             button1.TabIndex = 4;
             button1.Text = "Generar archivo de texto";
             button1.UseVisualStyleBackColor = true;
@@ -222,11 +226,31 @@
             dgvMatriz.Size = new Size(1021, 401);
             dgvMatriz.TabIndex = 5;
             // 
+            // lblErrores
+            // 
+            lblErrores.AutoSize = true;
+            lblErrores.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblErrores.Location = new Point(6, 646);
+            lblErrores.Name = "lblErrores";
+            lblErrores.Size = new Size(120, 13);
+            lblErrores.TabIndex = 10;
+            lblErrores.Text = "Lista de Errores";
+            // 
+            // txtErrors
+            // 
+            txtErrors.Dock = DockStyle.Bottom;
+            txtErrors.Location = new Point(3, 663);
+            txtErrors.Name = "txtErrors";
+            txtErrors.ReadOnly = true;
+            txtErrors.Size = new Size(1609, 258);
+            txtErrors.TabIndex = 11;
+            txtErrors.Text = "";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1681, 830);
+            ClientSize = new Size(1681, 976);
             Controls.Add(tbcTabs);
             Name = "Form1";
             Text = "Form1";
@@ -258,5 +282,7 @@
         private Label lblSintaxis;
         private Label lblLexico;
         private RichTextBox txtSintaxis;
+        private Label lblErrores;
+        private RichTextBox txtErrors;
     }
 }
