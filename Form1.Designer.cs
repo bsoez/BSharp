@@ -28,14 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             tbcTabs = new TabControl();
             tbpCompilador = new TabPage();
+            pcbBSharp = new PictureBox();
+            lblBSharp = new Label();
+            lblTripletas = new Label();
+            dgvQuadruple = new DataGridView();
+            txtErrors = new RichTextBox();
+            lblErrores = new Label();
             lblEntrada = new Label();
             lblSintaxis = new Label();
             lblLexico = new Label();
             txtSintaxis = new RichTextBox();
-            button2 = new Button();
-            button1 = new Button();
+            btnTablaSimbolos = new Button();
+            btnArchivoTexto = new Button();
             dgvTablaSimbolos = new DataGridView();
             Column2 = new DataGridViewTextBoxColumn();
             Column3 = new DataGridViewTextBoxColumn();
@@ -45,10 +52,11 @@
             btnCompilar = new Button();
             tbpMatriz = new TabPage();
             dgvMatriz = new DataGridView();
-            lblErrores = new Label();
-            txtErrors = new RichTextBox();
+            lblTablaSimbolos = new Label();
             tbcTabs.SuspendLayout();
             tbpCompilador.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pcbBSharp).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvQuadruple).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvTablaSimbolos).BeginInit();
             tbpMatriz.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvMatriz).BeginInit();
@@ -61,19 +69,24 @@
             tbcTabs.Location = new Point(12, 12);
             tbcTabs.Name = "tbcTabs";
             tbcTabs.SelectedIndex = 0;
-            tbcTabs.Size = new Size(1623, 952);
+            tbcTabs.Size = new Size(1657, 952);
             tbcTabs.TabIndex = 0;
             // 
             // tbpCompilador
             // 
+            tbpCompilador.Controls.Add(lblTablaSimbolos);
+            tbpCompilador.Controls.Add(pcbBSharp);
+            tbpCompilador.Controls.Add(lblBSharp);
+            tbpCompilador.Controls.Add(lblTripletas);
+            tbpCompilador.Controls.Add(dgvQuadruple);
             tbpCompilador.Controls.Add(txtErrors);
             tbpCompilador.Controls.Add(lblErrores);
             tbpCompilador.Controls.Add(lblEntrada);
             tbpCompilador.Controls.Add(lblSintaxis);
             tbpCompilador.Controls.Add(lblLexico);
             tbpCompilador.Controls.Add(txtSintaxis);
-            tbpCompilador.Controls.Add(button2);
-            tbpCompilador.Controls.Add(button1);
+            tbpCompilador.Controls.Add(btnTablaSimbolos);
+            tbpCompilador.Controls.Add(btnArchivoTexto);
             tbpCompilador.Controls.Add(dgvTablaSimbolos);
             tbpCompilador.Controls.Add(txtOutput);
             tbpCompilador.Controls.Add(txtInput);
@@ -81,16 +94,73 @@
             tbpCompilador.Location = new Point(4, 24);
             tbpCompilador.Name = "tbpCompilador";
             tbpCompilador.Padding = new Padding(3);
-            tbpCompilador.Size = new Size(1615, 924);
+            tbpCompilador.Size = new Size(1649, 924);
             tbpCompilador.TabIndex = 0;
             tbpCompilador.Text = "Compilador";
             tbpCompilador.UseVisualStyleBackColor = true;
+            // 
+            // pcbBSharp
+            // 
+            pcbBSharp.Image = (Image)resources.GetObject("pcbBSharp.Image");
+            pcbBSharp.Location = new Point(156, 6);
+            pcbBSharp.Name = "pcbBSharp";
+            pcbBSharp.Size = new Size(60, 60);
+            pcbBSharp.SizeMode = PictureBoxSizeMode.StretchImage;
+            pcbBSharp.TabIndex = 15;
+            pcbBSharp.TabStop = false;
+            // 
+            // lblBSharp
+            // 
+            lblBSharp.AutoSize = true;
+            lblBSharp.Font = new Font("Graduate", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblBSharp.Location = new Point(22, 17);
+            lblBSharp.Name = "lblBSharp";
+            lblBSharp.Size = new Size(132, 33);
+            lblBSharp.TabIndex = 14;
+            lblBSharp.Text = "BSharp";
+            // 
+            // lblTripletas
+            // 
+            lblTripletas.AutoSize = true;
+            lblTripletas.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTripletas.Location = new Point(754, 646);
+            lblTripletas.Name = "lblTripletas";
+            lblTripletas.Size = new Size(71, 13);
+            lblTripletas.TabIndex = 13;
+            lblTripletas.Text = "Tripletas";
+            // 
+            // dgvQuadruple
+            // 
+            dgvQuadruple.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvQuadruple.Location = new Point(754, 663);
+            dgvQuadruple.Name = "dgvQuadruple";
+            dgvQuadruple.Size = new Size(877, 255);
+            dgvQuadruple.TabIndex = 12;
+            // 
+            // txtErrors
+            // 
+            txtErrors.Location = new Point(3, 663);
+            txtErrors.Name = "txtErrors";
+            txtErrors.ReadOnly = true;
+            txtErrors.Size = new Size(672, 258);
+            txtErrors.TabIndex = 11;
+            txtErrors.Text = "";
+            // 
+            // lblErrores
+            // 
+            lblErrores.AutoSize = true;
+            lblErrores.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblErrores.Location = new Point(6, 646);
+            lblErrores.Name = "lblErrores";
+            lblErrores.Size = new Size(120, 13);
+            lblErrores.TabIndex = 10;
+            lblErrores.Text = "Lista de Errores";
             // 
             // lblEntrada
             // 
             lblEntrada.AutoSize = true;
             lblEntrada.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblEntrada.Location = new Point(22, 25);
+            lblEntrada.Location = new Point(22, 80);
             lblEntrada.Name = "lblEntrada";
             lblEntrada.Size = new Size(64, 13);
             lblEntrada.TabIndex = 9;
@@ -100,7 +170,7 @@
             // 
             lblSintaxis.AutoSize = true;
             lblSintaxis.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblSintaxis.Location = new Point(465, 25);
+            lblSintaxis.Location = new Point(465, 80);
             lblSintaxis.Name = "lblSintaxis";
             lblSintaxis.Size = new Size(64, 13);
             lblSintaxis.TabIndex = 8;
@@ -110,7 +180,7 @@
             // 
             lblLexico.AutoSize = true;
             lblLexico.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblLexico.Location = new Point(249, 25);
+            lblLexico.Location = new Point(249, 80);
             lblLexico.Name = "lblLexico";
             lblLexico.Size = new Size(50, 13);
             lblLexico.TabIndex = 7;
@@ -119,42 +189,42 @@
             // txtSintaxis
             // 
             txtSintaxis.Font = new Font("Comic Sans MS", 9.75F);
-            txtSintaxis.Location = new Point(465, 49);
+            txtSintaxis.Location = new Point(465, 104);
             txtSintaxis.Name = "txtSintaxis";
             txtSintaxis.Size = new Size(210, 367);
             txtSintaxis.TabIndex = 6;
             txtSintaxis.Text = "";
             txtSintaxis.WordWrap = false;
             // 
-            // button2
+            // btnTablaSimbolos
             // 
-            button2.Location = new Point(754, 431);
-            button2.Name = "button2";
-            button2.Size = new Size(633, 31);
-            button2.TabIndex = 5;
-            button2.Text = "Generar archivo de texto Tabla de simbolos";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            btnTablaSimbolos.Location = new Point(754, 486);
+            btnTablaSimbolos.Name = "btnTablaSimbolos";
+            btnTablaSimbolos.Size = new Size(877, 31);
+            btnTablaSimbolos.TabIndex = 5;
+            btnTablaSimbolos.Text = "Generar archivo de texto Tabla de simbolos";
+            btnTablaSimbolos.UseVisualStyleBackColor = true;
+            btnTablaSimbolos.Click += button2_Click;
             // 
-            // button1
+            // btnArchivoTexto
             // 
-            button1.Location = new Point(754, 398);
-            button1.Name = "button1";
-            button1.Size = new Size(633, 31);
-            button1.TabIndex = 4;
-            button1.Text = "Generar archivo de texto";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            btnArchivoTexto.Location = new Point(754, 453);
+            btnArchivoTexto.Name = "btnArchivoTexto";
+            btnArchivoTexto.Size = new Size(877, 31);
+            btnArchivoTexto.TabIndex = 4;
+            btnArchivoTexto.Text = "Generar archivo de texto";
+            btnArchivoTexto.UseVisualStyleBackColor = true;
+            btnArchivoTexto.Click += button1_Click;
             // 
             // dgvTablaSimbolos
             // 
             dgvTablaSimbolos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvTablaSimbolos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvTablaSimbolos.Columns.AddRange(new DataGridViewColumn[] { Column2, Column3, Column4 });
-            dgvTablaSimbolos.Location = new Point(755, 25);
+            dgvTablaSimbolos.Location = new Point(755, 80);
             dgvTablaSimbolos.Name = "dgvTablaSimbolos";
             dgvTablaSimbolos.RowHeadersWidth = 51;
-            dgvTablaSimbolos.Size = new Size(632, 367);
+            dgvTablaSimbolos.Size = new Size(876, 367);
             dgvTablaSimbolos.TabIndex = 3;
             // 
             // Column2
@@ -178,7 +248,7 @@
             // txtOutput
             // 
             txtOutput.Font = new Font("Comic Sans MS", 9.75F);
-            txtOutput.Location = new Point(249, 49);
+            txtOutput.Location = new Point(249, 104);
             txtOutput.Name = "txtOutput";
             txtOutput.ScrollBars = RichTextBoxScrollBars.Horizontal;
             txtOutput.Size = new Size(210, 367);
@@ -189,7 +259,7 @@
             // txtInput
             // 
             txtInput.Font = new Font("Comic Sans MS", 9.75F);
-            txtInput.Location = new Point(22, 49);
+            txtInput.Location = new Point(22, 104);
             txtInput.Name = "txtInput";
             txtInput.Size = new Size(210, 367);
             txtInput.TabIndex = 1;
@@ -198,7 +268,7 @@
             // 
             // btnCompilar
             // 
-            btnCompilar.Location = new Point(22, 431);
+            btnCompilar.Location = new Point(22, 486);
             btnCompilar.Name = "btnCompilar";
             btnCompilar.Size = new Size(653, 33);
             btnCompilar.TabIndex = 0;
@@ -212,7 +282,7 @@
             tbpMatriz.Location = new Point(4, 24);
             tbpMatriz.Name = "tbpMatriz";
             tbpMatriz.Padding = new Padding(3);
-            tbpMatriz.Size = new Size(1615, 766);
+            tbpMatriz.Size = new Size(1649, 924);
             tbpMatriz.TabIndex = 1;
             tbpMatriz.Text = "Matriz";
             tbpMatriz.UseVisualStyleBackColor = true;
@@ -226,25 +296,15 @@
             dgvMatriz.Size = new Size(1021, 401);
             dgvMatriz.TabIndex = 5;
             // 
-            // lblErrores
+            // lblTablaSimbolos
             // 
-            lblErrores.AutoSize = true;
-            lblErrores.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblErrores.Location = new Point(6, 646);
-            lblErrores.Name = "lblErrores";
-            lblErrores.Size = new Size(120, 13);
-            lblErrores.TabIndex = 10;
-            lblErrores.Text = "Lista de Errores";
-            // 
-            // txtErrors
-            // 
-            txtErrors.Dock = DockStyle.Bottom;
-            txtErrors.Location = new Point(3, 663);
-            txtErrors.Name = "txtErrors";
-            txtErrors.ReadOnly = true;
-            txtErrors.Size = new Size(1609, 258);
-            txtErrors.TabIndex = 11;
-            txtErrors.Text = "";
+            lblTablaSimbolos.AutoSize = true;
+            lblTablaSimbolos.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTablaSimbolos.Location = new Point(754, 61);
+            lblTablaSimbolos.Name = "lblTablaSimbolos";
+            lblTablaSimbolos.Size = new Size(130, 13);
+            lblTablaSimbolos.TabIndex = 16;
+            lblTablaSimbolos.Text = "Tabla de Símbolos";
             // 
             // Form1
             // 
@@ -252,11 +312,14 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1681, 976);
             Controls.Add(tbcTabs);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
-            Text = "Form1";
+            Text = "BSharp";
             tbcTabs.ResumeLayout(false);
             tbpCompilador.ResumeLayout(false);
             tbpCompilador.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pcbBSharp).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvQuadruple).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvTablaSimbolos).EndInit();
             tbpMatriz.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvMatriz).EndInit();
@@ -273,16 +336,21 @@
         private RichTextBox txtOutput;
         private RichTextBox txtInput;
         private DataGridView dgvTablaSimbolos;
-        private Button button1;
+        private Button btnArchivoTexto;
         private DataGridViewTextBoxColumn Column2;
         private DataGridViewTextBoxColumn Column3;
         private DataGridViewTextBoxColumn Column4;
-        private Button button2;
+        private Button btnTablaSimbolos;
         private Label lblEntrada;
         private Label lblSintaxis;
         private Label lblLexico;
         private RichTextBox txtSintaxis;
         private Label lblErrores;
         private RichTextBox txtErrors;
+        private DataGridView dgvQuadruple;
+        private Label lblBSharp;
+        private Label lblTripletas;
+        private PictureBox pcbBSharp;
+        private Label lblTablaSimbolos;
     }
 }

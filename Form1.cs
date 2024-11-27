@@ -12,6 +12,7 @@ namespace BSharp
         private readonly string[] TiposDeDatos = ["CADENA", "ENTERO", "REAL"];
         private static readonly char[] separatorArray = [' '];
         private static DataTable dtMatriz = new();
+        internal static List<Symbol> SymbolTable = [];
 
         public Form1()
         {
@@ -73,7 +74,6 @@ namespace BSharp
                 DataTable dt = new();
                 adapter.Fill(dt);
 
-                // no necesitamos remover las columnas
                 dt.Columns.RemoveAt(dt.Columns.Count - 1);
                 dt.Columns.RemoveAt(0);
 
@@ -99,38 +99,31 @@ namespace BSharp
 
         public void Lexema(string InputTokens, string OutputTokens)
         {
-            // Crear el DataTable con columnas adecuadas
             DataTable dtLexemas = new();
-            dtLexemas.Columns.Add("Renglon", typeof(int));  // Número de renglón
-            dtLexemas.Columns.Add("Columna", typeof(int));  // Posición dentro del renglón
-            dtLexemas.Columns.Add("InputToken", typeof(string));  // Token del Input
-            dtLexemas.Columns.Add("OutputToken", typeof(string)); // Token del Output
+            dtLexemas.Columns.Add("Renglon", typeof(int));
+            dtLexemas.Columns.Add("Columna", typeof(int));
+            dtLexemas.Columns.Add("InputToken", typeof(string));
+            dtLexemas.Columns.Add("OutputToken", typeof(string));
 
-            // Separar las líneas de los textos de entrada
             string[] inputLines = InputTokens.Split(["\r\n", "\n"], StringSplitOptions.None);
             string[] outputLines = OutputTokens.Split(["\r\n", "\n"], StringSplitOptions.None);
 
-            // Procesar cada renglón
             for (int i = 0; i < inputLines.Length; i++)
             {
-                // Separar los tokens en cada renglón utilizando un carácter como delimitador
                 string[] inputTokens = inputLines[i].Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
                 string[] outputTokens = outputLines[i].Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
 
-                // Asegurar que ambos renglones tengan la misma cantidad de tokens
-                if (inputTokens.Length != outputTokens.Length)
-                {
-                    throw new Exception("Error: Los tokens de entrada y salida no coinciden en el renglón " + (i + 1));
-                }
 
-                // Procesar cada token en el renglón
+                if (inputTokens.Length != outputTokens.Length)
+                    throw new Exception("Error: Los tokens de entrada y salida no coinciden en el renglón " + (i + 1));
+
                 for (int j = 0; j < inputTokens.Length; j++)
                 {
                     DataRow row = dtLexemas.NewRow();
-                    row["Renglon"] = i + 1;  // Número de renglón
-                    row["Columna"] = j + 1;  // Posición en la columna
-                    row["InputToken"] = inputTokens[j];  // Token en Input
-                    row["OutputToken"] = outputTokens[j]; // Token en Output
+                    row["Renglon"] = i + 1; 
+                    row["Columna"] = j + 1;
+                    row["InputToken"] = inputTokens[j];
+                    row["OutputToken"] = outputTokens[j];
                     dtLexemas.Rows.Add(row);
                 }
             }
@@ -153,10 +146,8 @@ namespace BSharp
                 }
                 else if (outputToken is "NUEN")
                     dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "ENTERO");
-                // Caso 3: Si el OutputToken es 'NUDE'
                 else if (outputToken is "NUDE")
-                    dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "REAL");
-                // Caso 4: Si el OutputToken es 'CADE'
+                    dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "REAL");   
                 else if (outputToken is "CADE")
                     dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "CADENA");
             }
@@ -170,12 +161,11 @@ namespace BSharp
             if (successLexico)
                 Lexema(txtInput.Text, txtOutput.Text);
 
-            bool successSintactico = AnalizadorSintactico();
-            if (successSintactico)
-            {
-
-            }
+            _ = AnalizadorSintactico();
             AnalizadorSemantico(txtInput.Text);
+            
+            List<Quadruple> quadruples = GenerateIntermediateCode(txtInput.Text);
+            DisplayIntermediateCode(quadruples, dgvQuadruple);
         }
 
         private void txtInput_TextChanged(object sender, EventArgs e) { ChangeColorWord(); }
@@ -214,12 +204,10 @@ namespace BSharp
                 txtOutput.Text = outputBuilder.ToString();
                 return true;
             }
-
             return false;
         }
 
         #region Methods
-
         private void ChangeColorWord()
         {
             string pattern = "";
@@ -337,36 +325,30 @@ namespace BSharp
             AnalyzeBalanceInicioFin(code);
             AnalyzeParenthesesBalance(code);
 
-            // Dividir el código en líneas basadas en saltos de línea
             string[] lines = code.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-
             bool foundInicio = false;
             bool foundFin = false;
 
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i].Trim();
-
-                // Detectar palabras reservadas especiales
-                if (line == "INICIO" && !foundInicio)
+                if (line is "INICIO" && !foundInicio)
                 {
                     WriteToConsole("Inicio del programa detectado.", "Info");
                     foundInicio = true;
                     continue;
                 }
 
-                if (line == "FIN" && !foundFin)
+                if (line is "FIN" && !foundFin)
                 {
                     WriteToConsole("Fin del programa detectado.", "Info");
                     foundFin = true;
                     continue;
                 }
 
-                // Detectar declaraciones
                 if (line.StartsWith("ENTERO ") || line.StartsWith("REAL ") || line.StartsWith("CADENA "))
                 {
-                    AnalyzeDeclaration(line, i + 1); // Enviar línea actual
+                    AnalyzeDeclaration(line, i + 1);
                     continue;
                 }
 
@@ -405,43 +387,29 @@ namespace BSharp
                     AnalyzeThen(line, i + 1);
                     continue;
                 }
-
-                // Detectar asignaciones
-                //if (line.Contains('='))
-                //{
-                //    AnalyzeAssignment(line, i + 1); // Enviar línea actual
-                //    continue;
-                //}
-
-                // Si no coincide con ningún patrón conocido
                 WriteToConsole($"Sintaxis inválida en la línea '{line}'.", "Error", i + 1);
             }
         }
 
         public void AnalyzeAssignment(string codeLine, int lineNumber)
         {
-            // Dividir la línea en partes por el signo "="
-            var parts = codeLine.Split('=', 2, StringSplitOptions.TrimEntries);
-
-            // Validar que la línea tenga exactamente 2 partes: identificador y expresión
+            string[] parts = codeLine.Split('=', 2, StringSplitOptions.TrimEntries);
             if (parts.Length != 2)
             {
                 WriteToConsole($"Sintaxis inválida en la asignación '{codeLine.Trim()}'.", "Error", lineNumber);
                 return;
             }
 
-            string variableName = parts[0]; // Antes del '='
-            string value = parts[1];        // Después del '='
+            string variableName = parts[0];
+            string value = parts[1];
 
-            // Buscar la variable en la tabla de símbolos
-            var symbol = SymbolTable.FirstOrDefault(s => s.Name == variableName);
-            if (symbol == null)
+            Symbol? symbol = SymbolTable.FirstOrDefault(s => s.Name == variableName);
+            if (symbol is null)
             {
                 WriteToConsole($"La variable '{variableName}' no ha sido declarada.", "Error", lineNumber);
                 return;
             }
 
-            // Validar el valor asignado según el tipo de la variable
             switch (symbol.Type)
             {
                 case "ENTERO":
@@ -468,44 +436,34 @@ namespace BSharp
                     }
                     break;
             }
-
-            // Si pasa todas las validaciones
             WriteToConsole($"Asignación válida: {variableName} = {value}.", "Success");
         }
 
-        //Analizador de declaraciones
-        internal static List<Symbol> SymbolTable = [];
         public void AnalyzeDeclaration(string codeLine, int lineNumber)
         {
-            // Dividir la línea en partes por espacios
-            var parts = codeLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            // Validar que la línea tenga al menos 4 partes: tipo, identificador, asignación, valor
-            if (parts.Length < 4 || parts[2] != "=")
+            string[] parts = codeLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 4 || parts[2] is not "=")
             {
                 WriteToConsole($"Sintaxis inválida en la declaración '{codeLine.Trim()}'.", "Error", lineNumber);
                 return;
             }
 
-            string type = parts[0];        // Tipo de dato: ENTERO, REAL, CADENA
-            string variableName = parts[1]; // Identificador (variable)
-            string value = string.Join(" ", parts.Skip(3)); // Valor asignado (puede incluir operaciones)
+            string type = parts[0];
+            string variableName = parts[1];
+            string value = string.Join(" ", parts.Skip(3));
 
-            // Verificar que el tipo sea válido
             if (type is not ("ENTERO" or "REAL" or "CADENA"))
             {
                 WriteToConsole($"Tipo de dato '{type}' no reconocido en la declaración '{codeLine.Trim()}'.", "Error", lineNumber);
                 return;
             }
 
-            // Verificar que el identificador no esté ya declarado
             if (SymbolTable.Any(s => s.Name == variableName))
             {
                 WriteToConsole($"La variable '{variableName}' ya fue declarada.", "Error", lineNumber);
                 return;
             }
 
-            // Validar el valor asignado según el tipo de dato
             switch (type)
             {
                 case "ENTERO":
@@ -533,70 +491,46 @@ namespace BSharp
                     break;
             }
 
-            // Agregar la variable a la tabla de símbolos
             SymbolTable.Add(new Symbol(variableName, type, true));
             WriteToConsole($"Declaración válida: {type} {variableName} = {value}.", "Success");
         }
 
         private static bool IsIntegerExpression(string expression)
         {
-            // Dividir la expresión por espacios para separar operandos y operadores
-            var tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
+            string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < tokens.Length; i++)
             {
-                if (i % 2 == 0) // Operando (número)
+                if (i % 2 is 0)
                 {
-                    if (!int.TryParse(tokens[i], out _)) // Validar que sea un entero
-                    {
+                    if (!int.TryParse(tokens[i], out _))
                         return false;
-                    }
                 }
-                else // Operador
-                {
-                    if (tokens[i] is not ("+" or "-" or "*" or "/")) // Validar operadores válidos
-                    {
+                else
+                    if (tokens[i] is not ("+" or "-" or "*" or "/"))
                         return false;
-                    }
-                }
             }
             return true;
         }
 
         private static bool IsRealExpression(string expression)
         {
-            // Dividir la expresión por espacios para separar operandos y operadores
-            var tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
+            string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < tokens.Length; i++)
             {
-                if (i % 2 == 0) // Operando (número)
-                {
-                    if (!float.TryParse(tokens[i], out _)) // Validar que sea un número real
-                    {
+                if (i % 2 is 0)
+                    if (!float.TryParse(tokens[i], out _)) 
                         return false;
-                    }
-                }
-                else // Operador
-                {
-                    if (tokens[i] is not ("+" or "-" or "*" or "/")) // Validar operadores válidos
-                    {
+                else
+                    if (tokens[i] is not ("+" or "-" or "*" or "/"))
                         return false;
-                    }
-                }
             }
             return true;
         }
 
-        private static bool IsStringExpression(string expression)
-        {
-            // Validar que la expresión completa esté entre comillas dobles
-            return expression.StartsWith('"') && expression.EndsWith('"');
-        }
+        private static bool IsStringExpression(string expression) { return expression.StartsWith('"') && expression.EndsWith('"'); }
 
         public void AnalyzeBalanceInicioFin(string code)
         {
-            // Dividir el código en líneas para analizarlas una por una
             string[] lines = code.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
             int inicioCount = 0;
@@ -605,31 +539,24 @@ namespace BSharp
             for (int i = 0; i < lines.Length; i++)
             {
                 string trimmedLine = lines[i].Trim();
-
-                // Contar ocurrencias de INICIO y FIN
-                if (trimmedLine == "INICIO")
+                if (trimmedLine is "INICIO")
                 {
                     inicioCount++;
-
-                    // Verificar si hay más de un INICIO
                     if (inicioCount > 1)
                     {
                         WriteToConsole($"Más de un 'INICIO' encontrado.", "Error", i + 1);
                         return;
                     }
                 }
-                else if (trimmedLine == "FIN")
+                else if (trimmedLine is "FIN")
                 {
                     finCount++;
-
-                    // Verificar si FIN aparece antes de INICIO
-                    if (inicioCount == 0)
+                    if (inicioCount is 0)
                     {
                         WriteToConsole($"'FIN' encontrado antes de 'INICIO'.", "Error", i + 1);
                         return;
                     }
 
-                    // Verificar si hay más de un FIN
                     if (finCount > 1)
                     {
                         WriteToConsole($"Más de un 'FIN' encontrado.", "Error", i + 1);
@@ -637,27 +564,23 @@ namespace BSharp
                     }
                 }
             }
-
-            // Verificar si falta INICIO o FIN al final del análisis
-            if (inicioCount == 0)
+            if (inicioCount is 0)
             {
                 WriteToConsole("No se encontró 'INICIO' en el código.", "Error");
                 return;
             }
-            if (finCount == 0)
+            if (finCount is 0)
             {
                 WriteToConsole("No se encontró 'FIN' en el código.", "Error");
                 return;
             }
 
-            // Si todo está bien
             WriteToConsole("'INICIO' y 'FIN' están correctamente equilibrados.", "Success");
         }
 
         private void AnalyzeReturn(string codeLine, int lineNumber)
         {
-            // Validar que tenga un identificador después de 'DEVUELVE'
-            var parts = codeLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = codeLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 2)
             {
                 WriteToConsole($"Sintaxis inválida en la instrucción 'DEVUELVE'.", "Error", lineNumber);
@@ -665,7 +588,7 @@ namespace BSharp
             }
 
             string variableName = parts[1];
-            var symbol = SymbolTable.FirstOrDefault(s => s.Name == variableName);
+            Symbol? symbol = SymbolTable.FirstOrDefault(s => s.Name == variableName);
             if (symbol == null)
             {
                 WriteToConsole($"La variable '{variableName}' no ha sido declarada.", "Error", lineNumber);
@@ -677,15 +600,15 @@ namespace BSharp
 
         private void AnalyzeRead(string codeLine, int lineNumber)
         {
-            if (!codeLine.StartsWith("LEER (") || !codeLine.EndsWith(")"))
+            if (!codeLine.StartsWith("LEER (") || !codeLine.EndsWith(')'))
             {
                 WriteToConsole($"Sintaxis inválida en la instrucción 'LEER'.", "Error", lineNumber);
                 return;
             }
 
-            string variableName = codeLine[6..^1].Trim(); // Extraer lo que está dentro de los paréntesis
-            var symbol = SymbolTable.FirstOrDefault(s => s.Name == variableName);
-            if (symbol == null)
+            string variableName = codeLine[6..^1].Trim();
+            Symbol? symbol = SymbolTable.FirstOrDefault(s => s.Name == variableName);
+            if (symbol is null)
             {
                 WriteToConsole($"La variable '{variableName}' no ha sido declarada.", "Error", lineNumber);
                 return;
@@ -696,13 +619,13 @@ namespace BSharp
 
         private void AnalyzePrint(string codeLine, int lineNumber)
         {
-            if (!codeLine.StartsWith("MOSTRAR (") || !codeLine.EndsWith(")"))
+            if (!codeLine.StartsWith("MOSTRAR (") || !codeLine.EndsWith(')'))
             {
                 WriteToConsole($"Sintaxis inválida en la instrucción 'MOSTRAR'.", "Error", lineNumber);
                 return;
             }
 
-            string content = codeLine[9..^1].Trim(); // Extraer lo que está dentro de los paréntesis
+            string content = codeLine[9..^1].Trim();
             if (string.IsNullOrWhiteSpace(content))
             {
                 WriteToConsole($"El contenido de 'MOSTRAR' no puede estar vacío.", "Error", lineNumber);
@@ -716,36 +639,27 @@ namespace BSharp
         {
             if (isElse)
             {
-                // Validar 'SINO'
-                var parts = codeLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string[] parts = codeLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length < 3 || parts[0] is not "SINO")
                 {
                     WriteToConsole($"Sintaxis inválida en la instrucción 'SINO'.", "Error", lineNumber);
                     return;
                 }
 
-                string elseAssignment = string.Join(" ", parts.Skip(1)); // Cambiar el nombre para evitar conflicto
+                string elseAssignment = string.Join(" ", parts.Skip(1));
                 AnalyzeAssignment(elseAssignment, lineNumber);
                 return;
             }
 
-            // Validar 'SI'
-            if (!codeLine.StartsWith("SI (") || !codeLine.Contains(")"))
+            if (!codeLine.StartsWith("SI (") || !codeLine.Contains(')'))
             {
                 WriteToConsole($"Sintaxis inválida en la instrucción 'SI'.", "Error", lineNumber);
                 return;
             }
-
-            // Encontrar la posición del paréntesis de cierre
-            int conditionEndIndex = codeLine.IndexOf(")") + 1;
-
-            // Extraer la condición dentro de los paréntesis
+            int conditionEndIndex = codeLine.IndexOf(')') + 1;
             string condition = codeLine.Substring(3, conditionEndIndex - 4).Trim();
+            string thenAssignment = codeLine[conditionEndIndex..].Trim();
 
-            // Extraer la asignación después del paréntesis de cierre
-            string thenAssignment = codeLine.Substring(conditionEndIndex).Trim();
-
-            // Validar la condición
             if (string.IsNullOrWhiteSpace(condition))
             {
                 WriteToConsole($"La condición en la instrucción 'SI' no puede estar vacía.", "Error", lineNumber);
@@ -753,39 +667,31 @@ namespace BSharp
             }
             WriteToConsole($"Instrucción válida: SI({condition}).", "Success");
 
-            // Validar la asignación
             AnalyzeAssignment(thenAssignment, lineNumber);
         }
 
         private void AnalyzeThen(string codeLine, int lineNumber)
         {
-            // Validar que la línea comience con "ENTONCES"
             if (!codeLine.StartsWith("ENTONCES "))
             {
                 WriteToConsole($"Sintaxis inválida en la instrucción 'ENTONCES'.", "Error", lineNumber);
                 return;
             }
 
-            // Extraer el resto de la línea después de "ENTONCES"
-            string assignment = codeLine.Substring(9).Trim();
+            string assignment = codeLine[9..].Trim();
 
-            // Validar que la asignación no esté vacía
             if (string.IsNullOrWhiteSpace(assignment))
             {
                 WriteToConsole($"La instrucción 'ENTONCES' debe incluir una asignación válida.", "Error", lineNumber);
                 return;
             }
-
-            // Analizar la asignación (reutilizamos el método de asignaciones)
             AnalyzeAssignment(assignment, lineNumber);
         }
 
         public void AnalyzeParenthesesBalance(string code)
         {
-            // Dividir el código en líneas
             string[] lines = code.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-            Stack<int> parenthesesStack = new(); // Para rastrear los paréntesis abiertos
+            Stack<int> parenthesesStack = new();
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -795,18 +701,15 @@ namespace BSharp
                 {
                     char currentChar = line[j];
 
-                    // Abrir paréntesis
-                    if (currentChar == '(')
+                    if (currentChar is '(')
                     {
-                        parenthesesStack.Push(i + 1); // Guardar la línea donde se abrió
+                        parenthesesStack.Push(i + 1);
                     }
 
-                    // Cerrar paréntesis
-                    else if (currentChar == ')')
+                    else if (currentChar is ')')
                     {
                         if (parenthesesStack.Count == 0)
                         {
-                            // Error: paréntesis de cierre sin apertura
                             WriteToConsole($"Error: Paréntesis de cierre ')' sin apertura en la línea {i + 1}.", "Error");
                             return;
                         }
@@ -815,15 +718,13 @@ namespace BSharp
                 }
             }
 
-            // Verificar si quedaron paréntesis abiertos
             while (parenthesesStack.Count > 0)
             {
                 int lineWithUnclosedParenthesis = parenthesesStack.Pop();
                 WriteToConsole($"Error: Paréntesis de apertura '(' sin cierre en la línea {lineWithUnclosedParenthesis}.", "Error");
             }
 
-            // Si no hubo errores
-            if (parenthesesStack.Count == 0)
+            if (parenthesesStack.Count is 0)
             {
                 WriteToConsole("Todos los paréntesis están correctamente equilibrados.", "Success");
             }
@@ -844,8 +745,7 @@ namespace BSharp
             {
                 txtErrors.SelectionStart = txtErrors.TextLength;
                 txtErrors.SelectionLength = 0;
-
-                // Configuración del color según el tipo de mensaje
+   
                 if (messageType is "Error")
                     txtErrors.SelectionColor = Color.Red;
                 else if (messageType is "Success")
@@ -853,7 +753,6 @@ namespace BSharp
                 else
                     txtErrors.SelectionColor = Color.Black;
 
-                // Añadir el mensaje al TextBox
                 txtErrors.AppendText(formattedMessage);
                 txtErrors.SelectionColor = txtErrors.ForeColor;
                 txtErrors.ScrollToCaret();
@@ -862,29 +761,104 @@ namespace BSharp
 
         #endregion
 
-        private void button1_Click(object sender, EventArgs e)
+        #region Código intermedio
+        private static List<Quadruple> GenerateIntermediateCode(string code)
         {
-            WriteToConsole("Aplicación iniciada correctamente.");
-            WriteToConsole("Se encontró un error inesperado.", "Error");
-            WriteToConsole("Proceso completado exitosamente.", "Success");
-            return;
-            string miString = txtOutput.Text;
-            // Resto del código para generar el archivo de texto
-            string rutaArchivo = "C:\\Users\\belen\\Desktop\\miArchivo.txt";
+            List<Quadruple> quadruples = [];
+            int tempCounter = 1;
 
-            try
+            string[] lines = code.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string line in lines)
             {
-                using (StreamWriter sw = new(rutaArchivo))
+                string trimmedLine = line.Trim();
+                if (trimmedLine.StartsWith("ENTERO ") || trimmedLine.StartsWith("REAL ") || trimmedLine.StartsWith("CADENA "))
                 {
-                    sw.Write(miString);
+                    var parts = trimmedLine.Split(' ', 3, StringSplitOptions.TrimEntries);
+                    string variableType = parts[0];
+                    string variableName = parts[1];
+                    string assignment = parts.Length > 2 ? parts[2] : "";
+
+                    // Procesar la asignación
+                    if (!string.IsNullOrWhiteSpace(assignment) && assignment.Contains('='))
+                    {
+                        var assignmentParts = assignment.Split('=', 2, StringSplitOptions.TrimEntries);
+                        string expression = assignmentParts[1];
+
+                        // Analizar la expresión
+                        string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                        if (tokens.Length is 1)
+                        {
+                            // Caso simple: x = y
+                            quadruples.Add(new Quadruple("=", tokens[0], "-", variableName));
+                        }
+                        else if (tokens.Length is 3)
+                        {
+                            string tempVar = $"t{tempCounter++}";
+                            quadruples.Add(new Quadruple(tokens[1], tokens[0], tokens[2], tempVar));
+                            quadruples.Add(new Quadruple("=", tempVar, "-", variableName));
+                        }
+                    }
+                    continue;
                 }
 
+                if (trimmedLine.Contains('=') && !trimmedLine.StartsWith("SI") && !trimmedLine.StartsWith("SINO") && !trimmedLine.StartsWith("ENTONCES"))
+                {
+                    var parts = trimmedLine.Split('=', 2, StringSplitOptions.TrimEntries);
+                    string left = parts[0];
+                    string right = parts[1];
+
+                    // Analizar la expresión en la parte derecha
+                    string[] tokens = right.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    if (tokens.Length is 1)
+                    {
+                        // Caso simple: x = y
+                        quadruples.Add(new Quadruple("=", tokens[0], "-", left));
+                    }
+                    else if (tokens.Length is 3)
+                    {
+                        // Caso: x = a + b
+                        string tempVar = $"t{tempCounter++}";
+                        quadruples.Add(new Quadruple(tokens[1], tokens[0], tokens[2], tempVar));
+                        quadruples.Add(new Quadruple("=", tempVar, "-", left));
+                    }
+                }
+            }
+            return quadruples;
+        }
+
+
+        private static void DisplayIntermediateCode(List<Quadruple> quadruples, DataGridView dgv)
+        {
+            dgv.Rows.Clear();
+            dgv.Columns.Clear();
+
+            // Configurar columnas
+            dgv.Columns.Add("Operator", "Operador");
+            dgv.Columns.Add("Operand1", "Operando 1");
+            dgv.Columns.Add("Operand2", "Operando 2");
+            dgv.Columns.Add("Result", "Resultado");
+
+            // Agregar filas con los cuádruplos
+            foreach (Quadruple quad in quadruples)
+                dgv.Rows.Add(quad.Operator, quad.Operand1, quad.Operand2, quad.Result);
+        }
+
+        #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string miString = txtOutput.Text;
+            string rutaArchivo = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "file.txt");
+            try
+            {
+                using StreamWriter sw = new(rutaArchivo);
+                sw.Write(miString);
                 MessageBox.Show("Se ha generado correctamente el archivo .txt");
             }
-            catch (Exception)
-            {
-                MessageBox.Show("Error en el archivo .txt");
-            }
+            catch (Exception) { MessageBox.Show("Error en el archivo .txt"); }
 
         }
 
@@ -898,7 +872,7 @@ namespace BSharp
 
             try
             {
-                using (StreamWriter sw = new("C:\\Users\\belen\\Desktop\\DATOS.txt"))
+                using (StreamWriter sw = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "DATOS.txt")))
                 {
                     for (int i = 0; i < dgvTablaSimbolos.Columns.Count; i++)
                     {
@@ -918,7 +892,6 @@ namespace BSharp
                         sw.WriteLine();
                     }
                 }
-
                 MessageBox.Show("Archivo de texto generado con éxito.", "Éxito");
             }
             catch (Exception ex) { MessageBox.Show("Error al generar el archivo de texto: " + ex.Message, "Error"); }
