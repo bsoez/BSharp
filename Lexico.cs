@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 
 namespace BSharp
 {
@@ -51,7 +46,8 @@ namespace BSharp
             string token = ObtenerToken(estadoFinal, dtMatrizTransicion);
             if (string.IsNullOrEmpty(token))
             {
-                return "Error: No se encontró el token";
+                //return "Error: No se encontró el token";
+                return "";
             }
 
             return token;
@@ -182,6 +178,10 @@ namespace BSharp
                 {
                     return "°";
                 }
+                else if (caracter == ' ')
+                {
+                    return " ";
+                }
             }
 
             return null; // Carácter no válido
@@ -192,6 +192,8 @@ namespace BSharp
             // Busca el valor en la columna correspondiente y el estado actual
             DataRow filaActual = dtMatrizTransicion.Rows[estadoActual];
 
+            if (columna is " ")
+                return 96;
             if (filaActual[columna] != DBNull.Value)
             {
                 return Convert.ToInt32(filaActual[columna]);

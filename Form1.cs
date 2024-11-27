@@ -110,14 +110,13 @@ namespace BSharp
 
             for (int i = 0; i < inputLines.Length; i++)
             {
-                string[] inputTokens = inputLines[i].Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
-                string[] outputTokens = outputLines[i].Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
+                List<string> inputTokens = TokenizeInput(inputLines[i]);
+                List<string> outputTokens = TokenizeInput(outputLines[i]);
 
-
-                if (inputTokens.Length != outputTokens.Length)
+                if (inputTokens.Count != outputTokens.Count)
                     throw new Exception("Error: Los tokens de entrada y salida no coinciden en el renglón " + (i + 1));
 
-                for (int j = 0; j < inputTokens.Length; j++)
+                for (int j = 0; j < inputTokens.Count; j++)
                 {
                     DataRow row = dtLexemas.NewRow();
                     row["Renglon"] = i + 1; 
@@ -137,7 +136,7 @@ namespace BSharp
                 if (outputToken is "IDEN" && columnaActual > 1)
                 {
                     DataRow? columnaAnterior = dtLexemas.AsEnumerable().FirstOrDefault(r => (int)r["Renglon"] == renglonActual && (int)r["Columna"] == columnaActual - 1);
-                    if (columnaAnterior != null)
+                    if (columnaAnterior is not null)
                     {
                         string? inputTokenAnterior = columnaAnterior["InputToken"].ToString();
                         if (TiposDeDatos.Contains(inputTokenAnterior))
@@ -152,6 +151,20 @@ namespace BSharp
                     dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "CADENA");
             }
         }
+
+        public static List<string> TokenizeInput(string input)
+        {
+            string pattern = "\"[^\"]*\"|\\S+";
+            Regex regex = new(pattern);
+
+            MatchCollection matches = regex.Matches(input);
+
+            List<string> tokens = [];
+            foreach (Match match in matches)
+                tokens.Add(match.Value);
+            return tokens;
+        }
+
         private void btnCompilar_Click(object sender, EventArgs e) 
         {
             dgvTablaSimbolos.Rows.Clear();
@@ -179,13 +192,19 @@ namespace BSharp
                 StringBuilder outputBuilder = new();
                 StringBuilder currentToken = new(); 
 
+                bool isCade = false;
                 foreach (char c in TokensLexico)
                 {
-                    if (char.IsWhiteSpace(c)) 
+                    if (c is '"')
+                        if (!isCade)
+                            isCade = true;
+                        else
+                            isCade = false;
+                    if (char.IsWhiteSpace(c) && !isCade) 
                     {
                         if (currentToken.Length > 0)
                         {
-                            string Result = BSharp.Lexico.AnalizarPalabra(currentToken.ToString(), dtMatriz);
+                            string Result = Lexico.AnalizarPalabra(currentToken.ToString(), dtMatriz);
                             outputBuilder.Append(Result); 
                             currentToken.Clear(); 
                         }
@@ -197,7 +216,7 @@ namespace BSharp
 
                 if (currentToken.Length > 0)
                 {
-                    string Result = BSharp.Lexico.AnalizarPalabra(currentToken.ToString(), dtMatriz);
+                    string Result = Lexico.AnalizarPalabra(currentToken.ToString(), dtMatriz);
                     outputBuilder.Append(Result);
                 }
 
@@ -828,7 +847,6 @@ namespace BSharp
             }
             return quadruples;
         }
-
 
         private static void DisplayIntermediateCode(List<Quadruple> quadruples, DataGridView dgv)
         {
