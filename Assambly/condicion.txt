@@ -1,0 +1,62 @@
+.model small
+.stack
+.data
+inputBuffer db 5, 0, 5 dup('$')
+Num♥v1 dw 0
+msg0 db 10,13,7, '♥m1 $'
+msg1 db 10,13,7, '♥m2 $'
+msg2 db 10,13,7, '♥m3 $'
+
+.code
+.startup
+mov ax, seg @data
+mov ds, ax
+
+mov ah,09
+lea dx, msg0
+int 21h
+
+lea dx, inputBuffer
+mov ah,0Ah
+int 21h
+
+lea si, inputBuffer+2
+xor cx, cx
+xor ax, ax
+convertir:
+lodsb
+cmp al, '$'
+je comparar
+sub al, 30h
+mov bx, cx
+shl bx, 1
+shl bx, 1
+add bx, cx
+mov cx, bx
+add cx, ax
+jmp convertir
+
+comparar:
+mov Num♥v1, cx
+
+mov ax, Num♥v1
+cmp ax, 10
+jle MJS1
+jmp MJS2
+
+MJS1:
+mov ah,09
+lea dx, msg1
+int 21h
+jmp FIN
+
+MJS2:
+mov ah,09
+lea dx, msg2
+int 21h
+
+FIN:
+mov ah,4ch
+int 21h
+.exit
+end

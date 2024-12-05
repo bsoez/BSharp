@@ -10,6 +10,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assambly\condicion.txt" />
+    <None Remove="Assambly\suma2num.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assambly\condicion.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assambly\suma2num.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons8-conejo-corredor-100.ico" />
   </ItemGroup>
 

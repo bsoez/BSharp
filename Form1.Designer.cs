@@ -296,7 +296,6 @@
             txtOutput.Font = new Font("Comic Sans MS", 9.75F);
             txtOutput.Location = new Point(249, 104);
             txtOutput.Name = "txtOutput";
-            txtOutput.ScrollBars = RichTextBoxScrollBars.Horizontal;
             txtOutput.Size = new Size(210, 367);
             txtOutput.TabIndex = 2;
             txtOutput.Text = "";
@@ -311,6 +310,7 @@
             txtInput.Size = new Size(210, 367);
             txtInput.TabIndex = 1;
             txtInput.Text = "";
+            txtInput.WordWrap = false;
             txtInput.TextChanged += txtInput_TextChanged;
             // 
             // btnCompilar

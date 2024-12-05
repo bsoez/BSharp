@@ -10,7 +10,7 @@ namespace BSharp
 
             foreach (char caracter in palabra)
             {
-                string columna = ObtenerColumnaDeCaracter(caracter);
+                string columna = ObtenerColumnaDeCaracter(caracter)!;
 
                 if (columna == null)
                 {
@@ -53,7 +53,7 @@ namespace BSharp
             return token;
         }
 
-        private static string ObtenerColumnaDeCaracter(char caracter)
+        private static string? ObtenerColumnaDeCaracter(char caracter)
         {
             if (char.IsUpper(caracter))
             {

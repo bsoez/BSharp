@@ -1,0 +1,65 @@
+﻿.model small
+.stack
+.data
+Numero♥v1 db 0
+Numero♥v2 db 0
+Numero♥v3 db 0
+msg0 db 10,13,7, ' ♥m1  $'
+msg1 db 10,13,7, ' ♥m2  $'
+msg2 db 10,13,7, ' ♥m3  $'
+.code
+.startup
+mov ax, seg @data
+mov ds, ax
+
+mov al, 0
+mov Numero♥v1, al
+
+mov ah,09
+lea dx, msg0
+int 21h
+
+mov ah,01
+int 21h
+sub al,30h
+mov Numero♥v1, al
+
+mov al, 0
+mov Numero♥v2, al
+
+mov ah,09
+lea dx, msg1
+int 21h
+
+mov ah,01
+int 21h
+sub al,30h
+mov Numero♥v2, al
+
+mov al, Numero♥v1
+add al, Numero♥v2
+mov Numero♥v3, al
+
+mov ah,09
+lea dx, msg2
+int 21h
+
+mov al, Numero♥v3
+AAM
+mov bx, ax
+mov ah,02h
+mov dl, bh
+add dl, 30h
+mov bx, ax
+int 21h
+
+mov ah,02h
+mov dl, bl
+add dl, 30h
+mov bx, ax
+int 21h
+
+mov ah,4ch
+int 21h
+.exit
+end

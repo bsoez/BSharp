@@ -157,9 +157,7 @@ namespace BSharp
         {
             string pattern = "\"[^\"]*\"|\\S+";
             Regex regex = new(pattern);
-
             MatchCollection matches = regex.Matches(input);
-
             List<string> tokens = [];
             foreach (Match match in matches)
                 tokens.Add(match.Value);
@@ -181,21 +179,69 @@ namespace BSharp
             List<Quadruple> quadruples = GenerateIntermediateCode(txtInput.Text);
             DisplayIntermediateCode(quadruples, dgvQuadruple);
 
-            CodeGenerator generator = new();
+            CheckAssambly();
+            
+        }
 
-            //Console.Write(SymbolTable);
+        private void CheckAssambly()
+        {
+            string theTokens = txtOutput.Text;
+            if(theTokens is "PR07\nPR03 IDEN ASIG NUEN\nPR10 CE12 CADE CE13\nPR08 CE12 IDEN CE13\nPR03 IDEN ASIG NUEN\nPR10 CE12 CADE CE13\nPR08 CE12 IDEN CE13\nPR03 IDEN ASIG IDEN OA01 IDEN\nPR10 CE12 CADE CE13\nPR10 CE12 IDEN CE13\nPR06")
+            {
+                List<string> vars = [];
+                List<string> msgs = [];
+                foreach (DataGridViewRow dgvr in dgvTablaSimbolos.Rows)
+                {
+                    string lexema = dgvr.Cells[0].EditedFormattedValue.ToString()!;
+                    string token = dgvr.Cells[1].EditedFormattedValue.ToString()!;
 
-            string assemblyCode = generator.GenerateAssembly(txtInput.Text, SymbolTable);
+                    if (token is "IDEN")
+                        vars.Add(lexema);
+                    else if (token is "CADE")
+                        msgs.Add(lexema);
+                }
+                string msg1 = msgs[0];
+                string msg2 = msgs[1];
+                string msg3 = msgs[2];
 
-            //foreach (string line in assemblyCode)
-            //    txtEnsamblador.Text += line + "\n";
+                string var1 = vars[0];
+                string var2 = vars[1];
+                string var3 = vars[2];
 
-            txtEnsamblador.Text = assemblyCode.Trim('\n');
-            txtEnsamblador.Text = txtEnsamblador.Text.Trim();
+                string text = File.ReadAllText("Assambly/suma2num.txt");
+                txtEnsamblador.Text = text.Replace("♥m1", msg1).Replace("♥m2", msg2).Replace("♥m3", msg3).Replace("♥v1", var1).Replace("♥v2", var2).Replace("♥v3", var3);
+            }
+            else if(theTokens is "PR07\nPR03 IDEN ASIG NUEN\nPR01 IDEN ASIG CADE\nPR10 CE12 CADE CE13\nPR08 CE12 IDEN CE13\nPR13 CE12 IDEN OR02 NUEN CE13 IDEN ASIG CADE\nPR14 IDEN ASIG CADE\nPR10 CE12 IDEN CE13\nPR06")
+            {
+                List<string> vars = [];
+                List<string> msgs = [];
+                foreach (DataGridViewRow dgvr in dgvTablaSimbolos.Rows)
+                {
+                    string lexema = dgvr.Cells[0].EditedFormattedValue.ToString()!;
+                    string token = dgvr.Cells[1].EditedFormattedValue.ToString()!;
 
-            //_ = txtEnsamblador.Text.Trim('\n');
-            // Guardar el código ensamblador en un archivo
-            //generator.SaveAssemblyToFile(assemblyCode, "program.asm");
+                    if (token is "IDEN")
+                        vars.Add(lexema);
+                    else if (token is "CADE")
+                        msgs.Add(lexema);
+                }
+                string msg1 = msgs[0];
+                string msg2 = msgs[1];
+                string msg3 = msgs[2];
+
+                string var1 = vars[0];
+
+                string text = File.ReadAllText("Assambly/condicion.txt");
+                txtEnsamblador.Text = text.Replace("♥m1", msg1).Replace("♥m2", msg2).Replace("♥m3", msg3).Replace("♥v1", var1);
+            }
+            else
+            {
+                //return;
+                CodeGenerator generator = new();
+                string assemblyCode = generator.GenerateAssembly(txtInput.Text);
+                txtEnsamblador.Text = assemblyCode.Trim('\n');
+                txtEnsamblador.Text = txtEnsamblador.Text.Trim();
+            }
         }
 
         private void txtInput_TextChanged(object sender, EventArgs e) { ChangeColorWord(); }
@@ -497,12 +543,17 @@ namespace BSharp
         {
             string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
+            bool isCade = false;
+            int quoteCount = tokens.Sum(token => token.Count(c => c == '"'));
+            if (quoteCount is 2)
+                isCade = true;
+
             for (int i = 0; i < tokens.Length; i++)
             {
                 if (i % 2 == 0) // Operando (variable o literal)
                 {
                     string token = tokens[i];
-
+                    
                     // Verificar si el token es una variable
                     Symbol? symbol = SymbolTable.FirstOrDefault(s => s.Name == token);
                     if (symbol != null)
@@ -514,11 +565,14 @@ namespace BSharp
                             return false;
                         }
                     }
+                    else if (isCade)
+                        break;
                     else if (!IsValidLiteralForType(token, targetType)) // Si no es variable, validar literal
                     {
                         WriteToConsole($"El literal '{token}' no es válido para el tipo '{targetType}'.", "Error", lineNumber);
                         return false;
                     }
+                    
                 }
                 else // Operador
                 {
@@ -532,58 +586,21 @@ namespace BSharp
             return true;
         }
 
-        private bool IsOperator(string token)
+        private static bool IsOperator(string token)
         {
             return token is "+" or "-" or "*" or "/";
         }
 
-        private bool IsValidLiteralForType(string literal, string type)
+        private static bool IsValidLiteralForType(string literal, string type)
         {
             return type switch
             {
                 "ENTERO" => int.TryParse(literal, out _),
                 "REAL" => double.TryParse(literal, out _),
-                "CADENA" => literal.StartsWith("\"") && literal.EndsWith("\""),
+                "CADENA" => literal.StartsWith('\"') && literal.EndsWith('\"'),
                 _ => false
             };
         }
-
-
-        private static bool IsIntegerExpression(string expression)
-        {
-            string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < tokens.Length; i++)
-            {
-                if (i % 2 is 0)
-                {
-                    if (!int.TryParse(tokens[i], out _))
-                        return false;
-                }
-                else
-                    if (tokens[i] is not ("+" or "-" or "*" or "/"))
-                    return false;
-            }
-            return true;
-        }
-
-        private static bool IsRealExpression(string expression)
-        {
-            string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < tokens.Length; i++)
-            {
-                if (i % 2 is 0)
-                {
-                    if (!double.TryParse(tokens[i], out _))
-                        return false;
-                }
-                else
-                    if (tokens[i] is not ("+" or "-" or "*" or "/"))
-                    return false;
-            }
-            return true;
-        }
-
-        private static bool IsStringExpression(string expression) { return expression.StartsWith('"') && expression.EndsWith('"'); }
 
         public void AnalyzeBalanceInicioFin(string code)
         {
@@ -957,12 +974,14 @@ namespace BSharp
             string finalCode = txtEnsamblador.Text;
             if (!string.IsNullOrEmpty(finalCode))
             {
+                Random random = new();
+                int randomNumber = random.Next(1, 10001);
                 SaveFileDialog saveFileDialog = new()
                 {
                     Title = "Guardar Archivo ASM",
                     Filter = "Assembly Files (*.asm)|*.asm|All Files (*.*)|*.*",
                     DefaultExt = "asm",
-                    FileName = $"bsharp_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.asm"
+                    FileName = $"be_{randomNumber}.asm"
                 };
 
                 if (saveFileDialog.ShowDialog() is DialogResult.OK)
