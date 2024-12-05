@@ -531,17 +531,27 @@ namespace BSharp
             return true;
         }
 
-        private static bool IsRealExpression(string expression)
+        private bool IsRealExpression(string expression)
         {
-            string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            // Dividir la expresión por espacios para separar operandos y operadores
+            var tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
             for (int i = 0; i < tokens.Length; i++)
             {
-                if (i % 2 is 0)
-                    if (!float.TryParse(tokens[i], out _)) 
+                if (i % 2 == 0) // Operando (número)
+                {
+                    if (!double.TryParse(tokens[i], out _)) // Validar que sea un número double
+                    {
                         return false;
-                else
-                    if (tokens[i] is not ("+" or "-" or "*" or "/"))
+                    }
+                }
+                else // Operador
+                {
+                    if (tokens[i] is not ("+" or "-" or "*" or "/")) // Validar operadores válidos
+                    {
                         return false;
+                    }
+                }
             }
             return true;
         }
