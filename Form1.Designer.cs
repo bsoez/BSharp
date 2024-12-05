@@ -31,6 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             tbcTabs = new TabControl();
             tbpCompilador = new TabPage();
+            btnGuardarCodigoFinal = new Button();
+            lblEnsamblador = new Label();
+            txtEnsamblador = new RichTextBox();
             lblTablaSimbolos = new Label();
             pcbBSharp = new PictureBox();
             lblBSharp = new Label();
@@ -53,9 +56,6 @@
             btnCompilar = new Button();
             tbpMatriz = new TabPage();
             dgvMatriz = new DataGridView();
-            txtEnsamblador = new RichTextBox();
-            lblEnsamblador = new Label();
-            btnGuardarCodigoFinal = new Button();
             tbcTabs.SuspendLayout();
             tbpCompilador.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pcbBSharp).BeginInit();
@@ -104,6 +104,36 @@
             tbpCompilador.TabIndex = 0;
             tbpCompilador.Text = "Compilador";
             tbpCompilador.UseVisualStyleBackColor = true;
+            // 
+            // btnGuardarCodigoFinal
+            // 
+            btnGuardarCodigoFinal.Location = new Point(755, 889);
+            btnGuardarCodigoFinal.Name = "btnGuardarCodigoFinal";
+            btnGuardarCodigoFinal.Size = new Size(876, 23);
+            btnGuardarCodigoFinal.TabIndex = 19;
+            btnGuardarCodigoFinal.Text = "Generar archivo ensamblador";
+            btnGuardarCodigoFinal.UseVisualStyleBackColor = true;
+            btnGuardarCodigoFinal.Click += btnGuardarCodigoFinal_Click;
+            // 
+            // lblEnsamblador
+            // 
+            lblEnsamblador.AutoSize = true;
+            lblEnsamblador.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblEnsamblador.Location = new Point(1202, 646);
+            lblEnsamblador.Name = "lblEnsamblador";
+            lblEnsamblador.Size = new Size(91, 13);
+            lblEnsamblador.TabIndex = 18;
+            lblEnsamblador.Text = "Código final";
+            // 
+            // txtEnsamblador
+            // 
+            txtEnsamblador.Font = new Font("Comic Sans MS", 9.75F);
+            txtEnsamblador.Location = new Point(1202, 663);
+            txtEnsamblador.Name = "txtEnsamblador";
+            txtEnsamblador.Size = new Size(429, 220);
+            txtEnsamblador.TabIndex = 17;
+            txtEnsamblador.Text = "";
+            txtEnsamblador.WordWrap = false;
             // 
             // lblTablaSimbolos
             // 
@@ -277,6 +307,7 @@
             txtInput.Font = new Font("Comic Sans MS", 9.75F);
             txtInput.Location = new Point(22, 104);
             txtInput.Name = "txtInput";
+            txtInput.ScrollBars = RichTextBoxScrollBars.Horizontal;
             txtInput.Size = new Size(210, 367);
             txtInput.TabIndex = 1;
             txtInput.Text = "";
@@ -311,36 +342,6 @@
             dgvMatriz.RowHeadersWidth = 51;
             dgvMatriz.Size = new Size(1021, 401);
             dgvMatriz.TabIndex = 5;
-            // 
-            // txtEnsamblador
-            // 
-            txtEnsamblador.Font = new Font("Comic Sans MS", 9.75F);
-            txtEnsamblador.Location = new Point(1202, 663);
-            txtEnsamblador.Name = "txtEnsamblador";
-            txtEnsamblador.Size = new Size(429, 220);
-            txtEnsamblador.TabIndex = 17;
-            txtEnsamblador.Text = "";
-            txtEnsamblador.WordWrap = false;
-            // 
-            // lblEnsamblador
-            // 
-            lblEnsamblador.AutoSize = true;
-            lblEnsamblador.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblEnsamblador.Location = new Point(1202, 646);
-            lblEnsamblador.Name = "lblEnsamblador";
-            lblEnsamblador.Size = new Size(91, 13);
-            lblEnsamblador.TabIndex = 18;
-            lblEnsamblador.Text = "Código final";
-            // 
-            // btnGuardarCodigoFinal
-            // 
-            btnGuardarCodigoFinal.Location = new Point(755, 889);
-            btnGuardarCodigoFinal.Name = "btnGuardarCodigoFinal";
-            btnGuardarCodigoFinal.Size = new Size(876, 23);
-            btnGuardarCodigoFinal.TabIndex = 19;
-            btnGuardarCodigoFinal.Text = "Generar archivo ensamblador";
-            btnGuardarCodigoFinal.UseVisualStyleBackColor = true;
-            btnGuardarCodigoFinal.Click += btnGuardarCodigoFinal_Click;
             // 
             // Form1
             // 

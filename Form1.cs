@@ -182,7 +182,10 @@ namespace BSharp
             DisplayIntermediateCode(quadruples, dgvQuadruple);
 
             CodeGenerator generator = new();
-            string assemblyCode = generator.GenerateAssembly(txtInput.Text);
+
+            //Console.Write(SymbolTable);
+
+            string assemblyCode = generator.GenerateAssembly(txtInput.Text, SymbolTable);
 
             //foreach (string line in assemblyCode)
             //    txtEnsamblador.Text += line + "\n";
@@ -434,8 +437,9 @@ namespace BSharp
             }
 
             string variableName = parts[0];
-            string value = parts[1];
+            string expression = parts[1];
 
+            // Verificar si la variable existe en la tabla de símbolos
             Symbol? symbol = SymbolTable.FirstOrDefault(s => s.Name == variableName);
             if (symbol is null)
             {
@@ -443,33 +447,14 @@ namespace BSharp
                 return;
             }
 
-            switch (symbol.Type)
+            // Validar la expresión
+            if (!IsValidExpression(expression, symbol.Type, lineNumber))
             {
-                case "ENTERO":
-                    if (!IsIntegerExpression(value))
-                    {
-                        WriteToConsole($"El valor '{value}' no es válido para la variable '{variableName}' de tipo 'ENTERO'.", "Error", lineNumber);
-                        return;
-                    }
-                    break;
-
-                case "REAL":
-                    if (!IsRealExpression(value))
-                    {
-                        WriteToConsole($"El valor '{value}' no es válido para la variable '{variableName}' de tipo 'REAL'.", "Error", lineNumber);
-                        return;
-                    }
-                    break;
-
-                case "CADENA":
-                    if (!IsStringExpression(value))
-                    {
-                        WriteToConsole($"El valor '{value}' no es válido para la variable '{variableName}' de tipo 'CADENA'.", "Error", lineNumber);
-                        return;
-                    }
-                    break;
+                WriteToConsole($"La expresión '{expression}' no es válida para la variable '{variableName}' de tipo '{symbol.Type}'.", "Error", lineNumber);
+                return;
             }
-            WriteToConsole($"Asignación válida: {variableName} = {value}.", "Success");
+
+            WriteToConsole($"Asignación válida: {variableName} = {expression}.", "Success");
         }
 
         public void AnalyzeDeclaration(string codeLine, int lineNumber)
@@ -497,36 +482,72 @@ namespace BSharp
                 return;
             }
 
-            switch (type)
+            // Validar la expresión de inicialización
+            if (!IsValidExpression(value, type, lineNumber))
             {
-                case "ENTERO":
-                    if (!IsIntegerExpression(value))
-                    {
-                        WriteToConsole($"La expresión '{value}' no es válida para una variable de tipo 'ENTERO'.", "Error", lineNumber);
-                        return;
-                    }
-                    break;
-
-                case "REAL":
-                    if (!IsRealExpression(value))
-                    {
-                        WriteToConsole($"La expresión '{value}' no es válida para una variable de tipo 'REAL'.", "Error", lineNumber);
-                        return;
-                    }
-                    break;
-
-                case "CADENA":
-                    if (!IsStringExpression(value))
-                    {
-                        WriteToConsole($"La expresión '{value}' no es válida para una variable de tipo 'CADENA'.", "Error", lineNumber);
-                        return;
-                    }
-                    break;
+                WriteToConsole($"La expresión '{value}' no es válida para una variable de tipo '{type}'.", "Error", lineNumber);
+                return;
             }
 
             SymbolTable.Add(new Symbol(variableName, type, true));
             WriteToConsole($"Declaración válida: {type} {variableName} = {value}.", "Success");
         }
+
+        private bool IsValidExpression(string expression, string targetType, int lineNumber)
+        {
+            string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                if (i % 2 == 0) // Operando (variable o literal)
+                {
+                    string token = tokens[i];
+
+                    // Verificar si el token es una variable
+                    Symbol? symbol = SymbolTable.FirstOrDefault(s => s.Name == token);
+                    if (symbol != null)
+                    {
+                        // Validar compatibilidad de tipos
+                        if (symbol.Type != targetType)
+                        {
+                            WriteToConsole($"La variable '{token}' de tipo '{symbol.Type}' no es compatible con el tipo '{targetType}'.", "Error", lineNumber);
+                            return false;
+                        }
+                    }
+                    else if (!IsValidLiteralForType(token, targetType)) // Si no es variable, validar literal
+                    {
+                        WriteToConsole($"El literal '{token}' no es válido para el tipo '{targetType}'.", "Error", lineNumber);
+                        return false;
+                    }
+                }
+                else // Operador
+                {
+                    if (!IsOperator(tokens[i]))
+                    {
+                        WriteToConsole($"Operador inválido '{tokens[i]}' en la expresión '{expression}'.", "Error", lineNumber);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool IsOperator(string token)
+        {
+            return token is "+" or "-" or "*" or "/";
+        }
+
+        private bool IsValidLiteralForType(string literal, string type)
+        {
+            return type switch
+            {
+                "ENTERO" => int.TryParse(literal, out _),
+                "REAL" => double.TryParse(literal, out _),
+                "CADENA" => literal.StartsWith("\"") && literal.EndsWith("\""),
+                _ => false
+            };
+        }
+
 
         private static bool IsIntegerExpression(string expression)
         {

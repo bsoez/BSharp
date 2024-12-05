@@ -32,6 +32,8 @@ namespace BSharp
             new GrammarRule("ARG03", "ASIG", "NUEN"),
             new GrammarRule("DECL", "PR03", "ARG01"),
             new GrammarRule("S", "DECL", "ARG03", " "),
+            new GrammarRule("S", "DECL", "ARG03", " "),
+            new GrammarRule("S", "DECL", "ARG10", " "),
 
             //PR04 ~ENTONCES~
             new GrammarRule("INSTR", "ARG01", "ARG03"),
@@ -177,6 +179,7 @@ namespace BSharp
             new GrammarRule("EXPR", "ARG04", "OA01", "NUDE"), // 2.2 + 2.2 °suma dos reales°
             new GrammarRule("S", "DECL", "EXPR", " "),
             new GrammarRule("ARG01", "IDEN"),
+            new GrammarRule("ARG10", "ASIG", "ARG01", "OA01", "ARG01"),
             new GrammarRule("S", "DECL", " ")
 
 
