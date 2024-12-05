@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             tbcTabs = new TabControl();
             tbpCompilador = new TabPage();
+            lblTablaSimbolos = new Label();
             pcbBSharp = new PictureBox();
             lblBSharp = new Label();
             lblTripletas = new Label();
@@ -52,7 +53,9 @@
             btnCompilar = new Button();
             tbpMatriz = new TabPage();
             dgvMatriz = new DataGridView();
-            lblTablaSimbolos = new Label();
+            txtEnsamblador = new RichTextBox();
+            lblEnsamblador = new Label();
+            btnGuardarCodigoFinal = new Button();
             tbcTabs.SuspendLayout();
             tbpCompilador.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pcbBSharp).BeginInit();
@@ -74,6 +77,9 @@
             // 
             // tbpCompilador
             // 
+            tbpCompilador.Controls.Add(btnGuardarCodigoFinal);
+            tbpCompilador.Controls.Add(lblEnsamblador);
+            tbpCompilador.Controls.Add(txtEnsamblador);
             tbpCompilador.Controls.Add(lblTablaSimbolos);
             tbpCompilador.Controls.Add(pcbBSharp);
             tbpCompilador.Controls.Add(lblBSharp);
@@ -98,6 +104,16 @@
             tbpCompilador.TabIndex = 0;
             tbpCompilador.Text = "Compilador";
             tbpCompilador.UseVisualStyleBackColor = true;
+            // 
+            // lblTablaSimbolos
+            // 
+            lblTablaSimbolos.AutoSize = true;
+            lblTablaSimbolos.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTablaSimbolos.Location = new Point(754, 61);
+            lblTablaSimbolos.Name = "lblTablaSimbolos";
+            lblTablaSimbolos.Size = new Size(130, 13);
+            lblTablaSimbolos.TabIndex = 16;
+            lblTablaSimbolos.Text = "Tabla de Símbolos";
             // 
             // pcbBSharp
             // 
@@ -134,7 +150,7 @@
             dgvQuadruple.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvQuadruple.Location = new Point(754, 663);
             dgvQuadruple.Name = "dgvQuadruple";
-            dgvQuadruple.Size = new Size(877, 255);
+            dgvQuadruple.Size = new Size(442, 220);
             dgvQuadruple.TabIndex = 12;
             // 
             // txtErrors
@@ -296,15 +312,35 @@
             dgvMatriz.Size = new Size(1021, 401);
             dgvMatriz.TabIndex = 5;
             // 
-            // lblTablaSimbolos
+            // txtEnsamblador
             // 
-            lblTablaSimbolos.AutoSize = true;
-            lblTablaSimbolos.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblTablaSimbolos.Location = new Point(754, 61);
-            lblTablaSimbolos.Name = "lblTablaSimbolos";
-            lblTablaSimbolos.Size = new Size(130, 13);
-            lblTablaSimbolos.TabIndex = 16;
-            lblTablaSimbolos.Text = "Tabla de Símbolos";
+            txtEnsamblador.Font = new Font("Comic Sans MS", 9.75F);
+            txtEnsamblador.Location = new Point(1202, 663);
+            txtEnsamblador.Name = "txtEnsamblador";
+            txtEnsamblador.Size = new Size(429, 220);
+            txtEnsamblador.TabIndex = 17;
+            txtEnsamblador.Text = "";
+            txtEnsamblador.WordWrap = false;
+            // 
+            // lblEnsamblador
+            // 
+            lblEnsamblador.AutoSize = true;
+            lblEnsamblador.Font = new Font("Graduate", 8.999999F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblEnsamblador.Location = new Point(1202, 646);
+            lblEnsamblador.Name = "lblEnsamblador";
+            lblEnsamblador.Size = new Size(91, 13);
+            lblEnsamblador.TabIndex = 18;
+            lblEnsamblador.Text = "Código final";
+            // 
+            // btnGuardarCodigoFinal
+            // 
+            btnGuardarCodigoFinal.Location = new Point(755, 889);
+            btnGuardarCodigoFinal.Name = "btnGuardarCodigoFinal";
+            btnGuardarCodigoFinal.Size = new Size(876, 23);
+            btnGuardarCodigoFinal.TabIndex = 19;
+            btnGuardarCodigoFinal.Text = "Generar archivo ensamblador";
+            btnGuardarCodigoFinal.UseVisualStyleBackColor = true;
+            btnGuardarCodigoFinal.Click += btnGuardarCodigoFinal_Click;
             // 
             // Form1
             // 
@@ -352,5 +388,8 @@
         private Label lblTripletas;
         private PictureBox pcbBSharp;
         private Label lblTablaSimbolos;
+        private Button btnGuardarCodigoFinal;
+        private Label lblEnsamblador;
+        private RichTextBox txtEnsamblador;
     }
 }

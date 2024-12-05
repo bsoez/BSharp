@@ -95,7 +95,7 @@ namespace BSharp
                 dgvMatriz.DataSource = dt;
             }
         }
-        
+
 
         public void Lexema(string InputTokens, string OutputTokens)
         {
@@ -119,7 +119,7 @@ namespace BSharp
                 for (int j = 0; j < inputTokens.Count; j++)
                 {
                     DataRow row = dtLexemas.NewRow();
-                    row["Renglon"] = i + 1; 
+                    row["Renglon"] = i + 1;
                     row["Columna"] = j + 1;
                     row["InputToken"] = inputTokens[j];
                     row["OutputToken"] = outputTokens[j];
@@ -146,7 +146,7 @@ namespace BSharp
                 else if (outputToken is "NUEN")
                     dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "ENTERO");
                 else if (outputToken is "NUDE")
-                    dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "REAL");   
+                    dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "REAL");
                 else if (outputToken is "CADE")
                     dgvTablaSimbolos.Rows.Add(inputToken, outputToken, "CADENA");
             }
@@ -165,7 +165,7 @@ namespace BSharp
             return tokens;
         }
 
-        private void btnCompilar_Click(object sender, EventArgs e) 
+        private void btnCompilar_Click(object sender, EventArgs e)
         {
             dgvTablaSimbolos.Rows.Clear();
             txtOutput.Clear();
@@ -176,9 +176,19 @@ namespace BSharp
 
             _ = AnalizadorSintactico();
             AnalizadorSemantico(txtInput.Text);
-            
+
             List<Quadruple> quadruples = GenerateIntermediateCode(txtInput.Text);
             DisplayIntermediateCode(quadruples, dgvQuadruple);
+
+            CodeGenerator generator = new();
+            List<string> assemblyCode = generator.GenerateAssembly(quadruples);
+
+            foreach (string line in assemblyCode)
+                txtEnsamblador.Text += line + "\n";
+
+            _ = txtEnsamblador.Text.Trim('\n');
+            // Guardar el código ensamblador en un archivo
+            //generator.SaveAssemblyToFile(assemblyCode, "program.asm");
         }
 
         private void txtInput_TextChanged(object sender, EventArgs e) { ChangeColorWord(); }
@@ -190,7 +200,7 @@ namespace BSharp
             if (!string.IsNullOrEmpty(TokensLexico))
             {
                 StringBuilder outputBuilder = new();
-                StringBuilder currentToken = new(); 
+                StringBuilder currentToken = new();
 
                 bool isCade = false;
                 foreach (char c in TokensLexico)
@@ -200,13 +210,13 @@ namespace BSharp
                             isCade = true;
                         else
                             isCade = false;
-                    if (char.IsWhiteSpace(c) && !isCade) 
+                    if (char.IsWhiteSpace(c) && !isCade)
                     {
                         if (currentToken.Length > 0)
                         {
                             string Result = Lexico.AnalizarPalabra(currentToken.ToString(), dtMatriz);
-                            outputBuilder.Append(Result); 
-                            currentToken.Clear(); 
+                            outputBuilder.Append(Result);
+                            currentToken.Clear();
                         }
                         outputBuilder.Append(c);
                     }
@@ -278,19 +288,19 @@ namespace BSharp
                 {
                     string stackBeforeReduce = string.Join(" ", stack.Reverse());
                     string? reducedSymbol = Reduce(stack);
-                    if(reducedSymbol is not null)
+                    if (reducedSymbol is not null)
                     {
                         stack.Push(reducedSymbol);
                         string stackWaiting = (stackBeforeReduce + " " + string.Join(" ", tokens)).Trim();
                         text = stackWaiting.Replace(stackBeforeReduce, string.Join(" ", stack.Reverse()));
-                        if(stack.Count == 1 && stack.Peek() == "S")
+                        if (stack.Count == 1 && stack.Peek() == "S")
                             sb.AppendLine($"[{numLinea}] S");
                         else
                             sb.AppendLine($"[{numLinea}] {text}");
                     }
                 }
             }
-            if(stack.Count is 1 && stack.Peek() is "S")
+            if (stack.Count is 1 && stack.Peek() is "S")
                 return sb.ToString();
             else
                 sb.AppendLine($"[{numLinea}] ERROR");
@@ -526,32 +536,24 @@ namespace BSharp
                 }
                 else
                     if (tokens[i] is not ("+" or "-" or "*" or "/"))
-                        return false;
+                    return false;
             }
             return true;
         }
 
-        private bool IsRealExpression(string expression)
+        private static bool IsRealExpression(string expression)
         {
-            // Dividir la expresión por espacios para separar operandos y operadores
-            var tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
+            string[] tokens = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < tokens.Length; i++)
             {
-                if (i % 2 == 0) // Operando (número)
+                if (i % 2 is 0)
                 {
-                    if (!double.TryParse(tokens[i], out _)) // Validar que sea un número double
-                    {
+                    if (!double.TryParse(tokens[i], out _))
                         return false;
-                    }
                 }
-                else // Operador
-                {
-                    if (tokens[i] is not ("+" or "-" or "*" or "/")) // Validar operadores válidos
-                    {
-                        return false;
-                    }
-                }
+                else
+                    if (tokens[i] is not ("+" or "-" or "*" or "/"))
+                    return false;
             }
             return true;
         }
@@ -774,7 +776,7 @@ namespace BSharp
             {
                 txtErrors.SelectionStart = txtErrors.TextLength;
                 txtErrors.SelectionLength = 0;
-   
+
                 if (messageType is "Error")
                     txtErrors.SelectionColor = Color.Red;
                 else if (messageType is "Success")
@@ -923,6 +925,36 @@ namespace BSharp
                 MessageBox.Show("Archivo de texto generado con éxito.", "Éxito");
             }
             catch (Exception ex) { MessageBox.Show("Error al generar el archivo de texto: " + ex.Message, "Error"); }
+        }
+
+        private void btnGuardarCodigoFinal_Click(object sender, EventArgs e)
+        {
+            string finalCode = txtEnsamblador.Text;
+            if (!string.IsNullOrEmpty(finalCode))
+            {
+                SaveFileDialog saveFileDialog = new()
+                {
+                    Title = "Guardar Archivo ASM",
+                    Filter = "Assembly Files (*.asm)|*.asm|All Files (*.*)|*.*",
+                    DefaultExt = "asm",
+                    FileName = "archivo.asm"
+                };
+
+                if (saveFileDialog.ShowDialog() is DialogResult.OK)
+                {
+                    string filePath = saveFileDialog.FileName;
+                    string[] lines = finalCode.Split('\n');
+                    try
+                    {
+                        File.WriteAllLines(filePath, lines);
+                        MessageBox.Show("Archivo ASM guardado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error al guardar el archivo: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
     }
 }
