@@ -3,6 +3,7 @@ using System.Data.OleDb;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace BSharp
 {
@@ -181,12 +182,15 @@ namespace BSharp
             DisplayIntermediateCode(quadruples, dgvQuadruple);
 
             CodeGenerator generator = new();
-            List<string> assemblyCode = generator.GenerateAssembly(quadruples);
+            string assemblyCode = generator.GenerateAssembly(txtInput.Text);
 
-            foreach (string line in assemblyCode)
-                txtEnsamblador.Text += line + "\n";
+            //foreach (string line in assemblyCode)
+            //    txtEnsamblador.Text += line + "\n";
 
-            _ = txtEnsamblador.Text.Trim('\n');
+            txtEnsamblador.Text = assemblyCode.Trim('\n');
+            txtEnsamblador.Text = txtEnsamblador.Text.Trim();
+
+            //_ = txtEnsamblador.Text.Trim('\n');
             // Guardar el código ensamblador en un archivo
             //generator.SaveAssemblyToFile(assemblyCode, "program.asm");
         }
@@ -937,7 +941,7 @@ namespace BSharp
                     Title = "Guardar Archivo ASM",
                     Filter = "Assembly Files (*.asm)|*.asm|All Files (*.*)|*.*",
                     DefaultExt = "asm",
-                    FileName = "archivo.asm"
+                    FileName = $"bsharp_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.asm"
                 };
 
                 if (saveFileDialog.ShowDialog() is DialogResult.OK)
